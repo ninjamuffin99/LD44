@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 
@@ -66,10 +67,12 @@ class Player extends FlxSprite
 			{
 				if (left)
 				{
+					facing = FlxObject.LEFT;
 					acceleration.x = -speed;
 				}
 				else
 				{
+					facing = FlxObject.RIGHT;
 					acceleration.x = speed;
 				}
 			}
