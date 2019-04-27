@@ -11,8 +11,8 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
  */
 class Player extends FlxSprite 
 {
-	private var speed:Float = 800;
-	private var thaDrag:Float = 440;
+	private var speed:Float = 1100;
+	private var thaDrag:Float = 480;
 	private var maxVel:Float = 350;
 	public var life:Float = 1;
 

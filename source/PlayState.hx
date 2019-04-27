@@ -55,8 +55,8 @@ class PlayState extends FlxState
 		grpHUD.add(txtHUD);
 		
 		
-		FlxG.camera.follow(_player, FlxCameraFollowStyle.TOPDOWN, 0.02);
-		FlxG.camera.followLead.set(80, 70);
+		FlxG.camera.follow(_player, FlxCameraFollowStyle.TOPDOWN, 0.5);
+		FlxG.camera.followLead.set(15, 10);
 		FlxG.camera.setScrollBounds(0, WORLDSIZE.width, 0, WORLDSIZE.height);
 		FlxG.worldBounds.set(0, 0, WORLDSIZE.width, WORLDSIZE.height);
 		
