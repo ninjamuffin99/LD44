@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 
 /**
@@ -13,6 +14,7 @@ class Eyeball extends Enemy
 	{
 		super(X, Y, SimpleGraphic);
 		
+		speed *= FlxG.random.float(1.5, 2.3);
 	}
 	
 	override public function update(elapsed:Float):Void 

@@ -13,12 +13,14 @@ import flixel.util.FlxTimer;
  */
 class Player extends FlxSprite 
 {
-	private var speed:Float = 1900;
-	private var thaDrag:Float = 680;
-	private var maxVel:Float = 350;
+	private var speed:Float = 1750;
+	private var thaDrag:Float = 500;
+	private var maxVel:Float = 330;
 	public var life:Float = 1;
 	
 	public var invincible:Bool = false;
+	
+	public var on:Bool = false;
 
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
@@ -33,7 +35,8 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
-		controls();
+		if (!on)
+			controls();
 		
 		if (invincible)
 		{
