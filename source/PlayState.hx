@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -12,6 +13,7 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
+import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
@@ -19,6 +21,9 @@ class PlayState extends FlxState
 	
 	private var enemiesLeft:Int = 0;
 	private var curWave:Int = 0;
+	private var waveTimer:Float = 20;
+	
+	private var txtWaveTime:FlxText;
 	
 	private var grpBullets:FlxTypedGroup<Bullet>;
 	private var grpEnemies:FlxTypedGroup<Enemy>;
@@ -46,15 +51,7 @@ class PlayState extends FlxState
 		grpBullets = new FlxTypedGroup<Bullet>();
 		add(grpBullets);
 		
-		generateEnemies();
-		
-		grpHUD = new FlxSpriteGroup();
-		add(grpHUD);
-		grpHUD.scrollFactor.set();
-		
-		txtHUD = new FlxText(4, 4, 0, "", 32);
-		grpHUD.add(txtHUD);
-		
+		initHUD();
 		
 		FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 0.1);
 		FlxG.camera.followLead.set(10, 5);
@@ -64,19 +61,60 @@ class PlayState extends FlxState
 		super.create();
 	}
 	
+	private function initHUD():Void
+	{
+		
+		grpHUD = new FlxSpriteGroup();
+		add(grpHUD);
+		grpHUD.scrollFactor.set();
+		
+		txtHUD = new FlxText(4, 4, 0, "", 32);
+		grpHUD.add(txtHUD);
+		
+		txtWaveTime = new FlxText(0, FlxG.height - 80, 0, "WAVE STARTS IN: ", 30);
+		txtWaveTime.color = FlxColor.RED;
+		txtWaveTime.alignment = CENTER;
+		txtWaveTime.screenCenter(X);
+		grpHUD.add(txtWaveTime);
+	}
+	
 	private function generateEnemies():Void
 	{
 		if (enemiesLeft == 0)
 		{
-			curWave += 1;
-			while (enemiesLeft < Std.int(FlxG.random.float(8 * curWave * 0.7, 12 * (curWave * 0.7))))
+			if (waveTimer >= 0)
 			{
-				var enemy:Enemy = new Eyeball(FlxG.width + FlxG.random.float(0, 60), FlxG.random.int(0, FlxG.height - 30));
-				grpEnemies.add(enemy);
+				waveTimer -= FlxG.elapsed;
 				
-				enemiesLeft += 1;
+				if (waveTimer > 9)
+				{
+					txtWaveTime.visible = true;
+				}
+				else
+				{
+					FlxFlicker.flicker(txtWaveTime, 0, 0.3, false, false);
+				}
+				
+				
+				txtWaveTime.text = "WAVE STARTS IN\n" + FlxMath.roundDecimal(waveTimer, 2) + "S";
+				txtWaveTime.screenCenter(X);
+			}
+			else
+			{
+				
+				
+				curWave += 1;
+				while (enemiesLeft < Std.int(FlxG.random.float(8 * curWave * 0.7, 12 * (curWave * 0.7))))
+				{
+					var enemy:Enemy = new Eyeball(FlxG.width + FlxG.random.float(0, 60), FlxG.random.int(0, FlxG.height - 30));
+					grpEnemies.add(enemy);
+					
+					enemiesLeft += 1;
+				}
 			}
 		}
+		else
+			txtWaveTime.visible = false;
 	}
 
 	override public function update(elapsed:Float):Void
