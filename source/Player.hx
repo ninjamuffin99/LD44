@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxTimer;
 
@@ -16,7 +17,7 @@ class Player extends FlxSprite
 	private var speed:Float = 1750;
 	private var thaDrag:Float = 500;
 	private var maxVel:Float = 330;
-	public var life:Float = 1;
+	public var life:Float = 0.2;
 	
 	public var invincible:Bool = false;
 	
@@ -26,7 +27,22 @@ class Player extends FlxSprite
 	{
 		super(X, Y, SimpleGraphic);
 		
-		makeGraphic(100, 60);
+		//makeGraphic(100, 60);
+		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.witch__png, AssetPaths.witch__xml);
+		frames = tex;
+		
+		setFacingFlip(FlxObject.LEFT, true, false);
+		setFacingFlip(FlxObject.RIGHT, false, false);
+		
+		setGraphicSize(Std.int(width * 0.6));
+		updateHitbox();
+		
+		offset.y = 70;
+		height -= 50;
+		
+		offset.x = 200;
+		width -= 190;
+		
 		
 		drag.set(thaDrag, thaDrag);
 		
@@ -35,6 +51,14 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
+		switch (facing)
+		{
+			case FlxObject.LEFT:
+				offset.x = 150;
+			case FlxObject.RIGHT:
+				offset.x = 200;
+		}
+		
 		if (!on)
 			controls();
 		

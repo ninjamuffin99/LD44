@@ -13,10 +13,12 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxRect;
+import flixel.math.FlxVelocity;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class PlayState extends FlxState
 {
@@ -39,6 +41,8 @@ class PlayState extends FlxState
 	private var _book:Spellbook;
 	private var walls:FlxGroup;
 	
+	private var _camTrack:FlxObject;
+	
 	override public function create():Void
 	{
 		WORLDSIZE = new FlxRect(0, 0, FlxG.width * 4, FlxG.height * 4);
@@ -48,7 +52,7 @@ class PlayState extends FlxState
 		bg.updateHitbox();
 		add(bg);
 		
-		_player = new Player(20, 20);
+		_player = new Player(WORLDSIZE.width / 2, WORLDSIZE.height / 2);
 		add(_player);
 		
 		grpEnemies = new FlxTypedGroup<Enemy>();
@@ -59,11 +63,17 @@ class PlayState extends FlxState
 		
 		initHUD();
 		
-		FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 0.1);
+		_camTrack = new FlxObject(0, 0, 1, 1);
+		add(_camTrack);
+		
+		FlxG.camera.focusOn(_player.getPosition());
+		
+		FlxG.camera.follow(_camTrack, FlxCameraFollowStyle.LOCKON, 0.1);
 		FlxG.camera.followLead.set(10, 5);
 		FlxG.camera.setScrollBounds(0, WORLDSIZE.width, 0, WORLDSIZE.height);
 		FlxG.worldBounds.set(0, 0, WORLDSIZE.width, WORLDSIZE.height);
-		FlxG.worldBounds.
+		
+		
 		
 		super.create();
 	}
@@ -114,60 +124,95 @@ class PlayState extends FlxState
 			else
 			{
 				curWave += 1;
+				
 				while (enemiesLeft < Std.int(FlxG.random.float(8 * curWave * 0.7, 12 * (curWave * 0.7))))
 				{
-					var enemy:Enemy = new Eyeball(WORLDSIZE.width + FlxG.random.float(0, 60), FlxG.random.float(0, WORLDSIZE.height - 30));
-					grpEnemies.add(enemy);
+					if (FlxG.random.bool(10))
+					{
+						var enemy:Enemy = new Bat(WORLDSIZE.width + FlxG.random.float(0, 60), FlxG.random.float(0, WORLDSIZE.height - 30));
+						grpEnemies.add(enemy);
+					}
+					else
+					{
+						var enemy:Enemy = new Eyeball(WORLDSIZE.width + FlxG.random.float(0, 60), FlxG.random.float(0, WORLDSIZE.height - 30));
+						grpEnemies.add(enemy);
+					}
+					
+					
 					
 					enemiesLeft += 1;
 				}
+				
+				waveTimer = 15;
 			}
 		}
 		else
 			txtWaveTime.visible = false;
 	}
 
+	private function shootBullet():Void
+	{
+		var dir:Int = 1;
+		if (_player.facing == FlxObject.LEFT && _book.spells.get("goLeft")[2])
+			dir = -1;
+		
+		var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180));
+		grpBullets.add(bullet);
+		
+		if (_book.spells.get("triple2")[2])
+		{
+			var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 - 30));
+			grpBullets.add(bullet);
+			
+			var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 + 30));
+			grpBullets.add(bullet);
+		}
+		
+	}
+	
 	override public function update(elapsed:Float):Void
 	{
+		cameraHandle();
+		
 		if (_player.life <= 0)
 			FlxG.resetState();
 		
 		if (FlxG.mouse.justPressed)
 		{
-			var dir:Int = 1;
-			if (_player.facing == FlxObject.LEFT && _book.spells.get("goLeft")[2])
-				dir = -1;
+			shootBullet();
 			
-			var bullet:Bullet = new Bullet(_player.x, _player.y, 700 * dir, FlxAngle.asRadians(180));
-			grpBullets.add(bullet);
+			if (_book.spells.get("triple")[2])
+			{
+				new FlxTimer().start(0.1, function(tmr:FlxTimer)
+				{
+					shootBullet();
+				}, 2);
+			}
 		}
 		
-		if (waveTimer > 0)
+		if (FlxG.keys.justPressed.E)
 		{
-			if (FlxG.keys.justPressed.E)
+			var goalY:Float = 0;
+			var curEase;
+			
+			if (!_book.on && waveTimer > 0)
 			{
-				var goalY:Float = 0;
-				var curEase;
-				
-				if (_book.on)
-				{
-					//FlxG.sound.play(AssetPaths.phoneOff__mp3, 0.7);
-					goalY = FlxG.height + 160;
-					curEase = FlxEase.backIn;
-					
-				}
-				else
-				{
-					//FlxG.sound.play(AssetPaths.phoneOn__wav, 0.7);
-					goalY = 20;
-					curEase = FlxEase.backOut;
-					//API.unlockMedal("MILLENIALS");
-				}
-				
-				FlxTween.tween(_book, {y: goalY}, 0.5, {ease:curEase});
-				
-				_book.on = !_book.on;
+				//FlxG.sound.play(AssetPaths.phoneOff__mp3, 0.7);
+				goalY = 20;
+				curEase = FlxEase.backOut;
 			}
+			else
+			{
+				goalY = FlxG.height + 160;
+				curEase = FlxEase.backIn;
+				//FlxG.sound.play(AssetPaths.phoneOn__wav, 0.7);
+				
+				//API.unlockMedal("MILLENIALS");
+			}
+			
+			FlxTween.tween(_book, {y: goalY}, 0.5, {ease:curEase});
+			
+			_book.on = !_book.on;
 		}
 		
 		super.update(elapsed);
@@ -176,12 +221,23 @@ class PlayState extends FlxState
 		{
 			if (e.x <= -20)
 				e.x = WORLDSIZE.width;
+			
+			switch(e.ETYPE)
+			{
+				case Enemy.BAT:
+					FlxVelocity.moveTowardsObject(e, _player, e.speed);
+			}
 		});
 		
 		FlxG.overlap(grpBullets, grpEnemies, function(b:Bullet, e:Enemy)
 		{
+			e.life -= b.damage;
+			e.velocity.x += b.velocity.x;
+			e.velocity.y += b.velocity.y;
+			
 			b.kill();
-			e.kill();
+			
+			
 		});
 		
 		FlxG.overlap(_player, grpEnemies, function(p:Player, e:Enemy)
@@ -200,7 +256,7 @@ class PlayState extends FlxState
 				
 				e.kill();
 				
-				_player.life -= 0.1;
+				_player.life -= e.damageDone;
 				_player.invincibleStart();
 			}
 		});
@@ -213,7 +269,20 @@ class PlayState extends FlxState
 		
 		enemiesLeft = enCount;
 		
-		txtHUD.text = "Enemies left: " + enemiesLeft + " --- Wave: " + curWave + " --- LIFE: " + FlxMath.roundDecimal(_player.life, 2);
+		txtHUD.text = "Enemies left: " + enemiesLeft + " --- Wave: " + curWave + " --- LIFE: " + FlxMath.roundDecimal(_player.life, 2) * 100 + "%";
 		generateEnemies();
+	}
+	
+	private function cameraHandle():Void
+	{
+		//SHOUTOUT TO MIKE, AND ALSO BOMTOONS
+		var dx = _player.getMidpoint().x - FlxG.mouse.x;
+		var dy = _player.getMidpoint().y - FlxG.mouse.y;
+		//var length = Math.sqrt(dx * dx + dy * dy);
+		var camOffset = 0.4;
+		dx *= camOffset;
+		dy *= camOffset;
+		_camTrack.x = _player.getMidpoint().x - dx;
+		_camTrack.y = _player.getMidpoint().y - dy;
 	}
 }

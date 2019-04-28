@@ -14,12 +14,15 @@ class Eyeball extends Enemy
 	{
 		super(X, Y, SimpleGraphic);
 		
-		speed *= FlxG.random.float(1.5, 2.3);
+		speed *= FlxG.random.float(1.7, 2.3);
+		
+		life = 0.2;
 	}
 	
 	override public function update(elapsed:Float):Void 
 	{
-		velocity.x = -speed;
+		acceleration.x = -speed;
+		maxVelocity.x = speed;
 		
 		super.update(elapsed);
 	}

@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
+import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
 
 /**
@@ -25,28 +26,54 @@ class Spellbook extends FlxSpriteGroup
 	{
 		super(X, Y);
 		
-		spells.set("goLeft", ["Allows you to shoot to the left!", 0.1, false]);
+		generateSpells();
+		
 		
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.book__png);
 		bg.setGraphicSize(FlxG.width, FlxG.height);
 		bg.updateHitbox();
 		add(bg);
 		
-		var txt:FlxText = new FlxText(60, 30, FlxG.width / 2, "BLAH BLAH BLACH\n\nSPELLS AND SHIT\nLMAO", 20);
-		txt.color = FlxColor.BLACK;
-		txt.text = spells.get("goLeft")[0] + "\nCosts: " + Std.string(spells.get("goLeft")[1] * 10) + "% of total life";
-		add(txt);
 		
-		var btn:FlxButton = new FlxButton(60, 80, "Learn!", function()
+		for (i in 0...3)
 		{
-			if (!spells.get("goLeft")[2])
+			
+			var txt:FlxText = new FlxText(70, 80 + (100 * i), FlxG.width / 2, "BLAH BLAH BLACH\n\nSPELLS AND SHIT\nLMAO", 24);
+			txt.font = AssetPaths.LionCub_Regular_2__ttf;
+			txt.color = FlxColor.BLACK;
+			txt.text = spells.get(spellArray[i])[0] + "\nCosts: " + Std.string(spells.get(spellArray[i])[1] * 100) + "% of total life";
+			txt.alpha = 0.7;
+			
+			var bgBtn:FlxSpriteButton = new FlxSpriteButton(50, 60 + (100 * i), null, function()
 			{
-				p.life -= spells.get("goLeft")[1];
-				spells.get("goLeft")[2] = true;
-				txt.text = "BOUGHT!";
-			}
-		});
-		add(btn);
+				if (!spells.get(spellArray[i])[2])
+				{
+					p.life -= spells.get(spellArray[i])[1];
+					spells.get(spellArray[i])[2] = true;
+					txt.text = "BOUGHT!";
+				}
+			});
+			bgBtn.makeGraphic(400, 86, FlxColor.BLACK);
+			bgBtn.alpha = 0.1;
+			bgBtn.onOver.callback = function(){bgBtn.alpha = 0.2; };
+			bgBtn.onOut.callback = function(){bgBtn.alpha = 0.1; };
+			add(bgBtn);
+			
+			add(txt);
+		}
 	}
 	
+	private function generateSpells():Void
+	{
+		spells.set("goLeft", ["Allows you to shoot to the left!", 		0.05, false]);
+		spells.set("triple", ["Shoots 3 bullets in a burst!", 			0.05, false]);
+		spells.set("triple2", ["Shoots bullets in multi directions!", 	0.05, false]);
+	}
+	
+	private var spellArray:Array<String> = 
+	[
+		"goLeft",
+		"triple",
+		"triple2"
+	];
 }

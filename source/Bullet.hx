@@ -19,7 +19,7 @@ class Bullet extends FlxSprite
 	public var accuracy:Float = 1;
 	public var bType:String = "";
 	
-	public var damage:Float;
+	public var damage:Float = 0.1;
 	
 	public function new(?X:Float=0, ?Y:Float=0, Speed:Float, bullAngle:Float) 
 	{
