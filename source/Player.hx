@@ -13,8 +13,8 @@ import flixel.util.FlxTimer;
  */
 class Player extends FlxSprite 
 {
-	private var speed:Float = 1100;
-	private var thaDrag:Float = 480;
+	private var speed:Float = 1900;
+	private var thaDrag:Float = 680;
 	private var maxVel:Float = 350;
 	public var life:Float = 1;
 	
@@ -36,9 +36,15 @@ class Player extends FlxSprite
 		controls();
 		
 		if (invincible)
-			FlxFlicker.flicker(this, 0,0.04, false, false);
+		{
+			//drag.set(thaDrag * 0.6, thaDrag * 0.6);
+			FlxFlicker.flicker(this, 0, 0.04, false, false);
+		}
 		else
+		{
+			drag.set(thaDrag, thaDrag);
 			FlxFlicker.stopFlickering(this);
+		}
 		
 		super.update(elapsed);
 	}

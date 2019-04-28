@@ -56,7 +56,7 @@ class PlayState extends FlxState
 		grpHUD.add(txtHUD);
 		
 		
-		FlxG.camera.follow(_player, FlxCameraFollowStyle.TOPDOWN, 0.1);
+		FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 0.1);
 		FlxG.camera.followLead.set(10, 5);
 		FlxG.camera.setScrollBounds(0, WORLDSIZE.width, 0, WORLDSIZE.height);
 		FlxG.worldBounds.set(0, 0, WORLDSIZE.width, WORLDSIZE.height);
@@ -107,19 +107,21 @@ class PlayState extends FlxState
 		{
 			b.kill();
 			e.kill();
-			
-			enemiesLeft -= 1;
 		});
 		
 		FlxG.overlap(_player, grpEnemies, function(p:Player, e:Enemy)
 		{
 			if (!_player.invincible)
 			{
-				var pulseShit:Float = 700;
-				if (p.x > e.x)
-					p.velocity.x += pulseShit;
-				else
-					p.velocity.x -= pulseShit;
+				var pulseShit:Float = 1500;
+				
+				var daAngle:Float = Math.atan2(p.getMidpoint().y - e.getMidpoint().y, p.getMidpoint().x - e.getMidpoint().x);
+				
+				var xdir = Math.cos(daAngle);
+				var ydir = Math.sin(daAngle);
+				
+				p.velocity.y += ydir * pulseShit;
+				p.velocity.x += xdir * pulseShit;
 				
 				e.kill();
 				
@@ -128,7 +130,13 @@ class PlayState extends FlxState
 			}
 		});
 		
+		var enCount:Int = 0;
+		grpEnemies.forEachAlive(function(e:Enemy)
+		{
+			enCount += 1;
+		});
 		
+		enemiesLeft = enCount;
 		
 		txtHUD.text = "Enemies left: " + enemiesLeft + " --- Wave: " + curWave + " --- LIFE: " + FlxMath.roundDecimal(_player.life, 2);
 		generateEnemies();
