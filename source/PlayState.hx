@@ -9,6 +9,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 
@@ -55,8 +56,8 @@ class PlayState extends FlxState
 		grpHUD.add(txtHUD);
 		
 		
-		FlxG.camera.follow(_player, FlxCameraFollowStyle.TOPDOWN, 0.5);
-		FlxG.camera.followLead.set(15, 10);
+		FlxG.camera.follow(_player, FlxCameraFollowStyle.TOPDOWN, 0.1);
+		FlxG.camera.followLead.set(10, 5);
 		FlxG.camera.setScrollBounds(0, WORLDSIZE.width, 0, WORLDSIZE.height);
 		FlxG.worldBounds.set(0, 0, WORLDSIZE.width, WORLDSIZE.height);
 		
@@ -80,13 +81,16 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 	{
+		if (_player.life <= 0)
+			FlxG.resetState();
+		
 		if (FlxG.mouse.justPressed)
 		{
 			var dir:Int = 1;
 			if (_player.facing == FlxObject.LEFT)
 				dir = -1;
 			
-			var bullet:Bullet = new Bullet(_player.x, _player.y, 400 * dir, FlxAngle.asRadians(180));
+			var bullet:Bullet = new Bullet(_player.x, _player.y, 700 * dir, FlxAngle.asRadians(180));
 			grpBullets.add(bullet);
 		}
 		
@@ -107,8 +111,26 @@ class PlayState extends FlxState
 			enemiesLeft -= 1;
 		});
 		
+		FlxG.overlap(_player, grpEnemies, function(p:Player, e:Enemy)
+		{
+			if (!_player.invincible)
+			{
+				var pulseShit:Float = 700;
+				if (p.x > e.x)
+					p.velocity.x += pulseShit;
+				else
+					p.velocity.x -= pulseShit;
+				
+				e.kill();
+				
+				_player.life -= 0.1;
+				_player.invincibleStart();
+			}
+		});
 		
-		txtHUD.text = "Enemies left: " + enemiesLeft + " --- Wave: " + curWave;
+		
+		
+		txtHUD.text = "Enemies left: " + enemiesLeft + " --- Wave: " + curWave + " --- LIFE: " + FlxMath.roundDecimal(_player.life, 2);
 		generateEnemies();
 	}
 }

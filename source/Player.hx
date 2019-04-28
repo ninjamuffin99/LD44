@@ -3,7 +3,9 @@ package;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.effects.FlxFlicker;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.util.FlxTimer;
 
 /**
  * ...
@@ -15,6 +17,8 @@ class Player extends FlxSprite
 	private var thaDrag:Float = 480;
 	private var maxVel:Float = 350;
 	public var life:Float = 1;
+	
+	public var invincible:Bool = false;
 
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
@@ -31,7 +35,22 @@ class Player extends FlxSprite
 	{
 		controls();
 		
+		if (invincible)
+			FlxFlicker.flicker(this, 0,0.04, false, false);
+		else
+			FlxFlicker.stopFlickering(this);
+		
 		super.update(elapsed);
+	}
+	
+	public function invincibleStart(time:Float = 1):Void
+	{
+		invincible = true;
+		
+		new FlxTimer().start(time, function(tmr:FlxTimer)
+		{
+			invincible = false;
+		});
 	}
 	
 	private function controls():Void
