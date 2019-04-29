@@ -18,20 +18,23 @@
 	<SubTexture name="eyeblue0013" x="620" y="0" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
 	<SubTexture name="eyeblue0014" x="302" y="512" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
 	<SubTexture name="eyeblue0015" x="302" y="512" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0000" x="619" y="512" width="302" height="258" frameX="-22" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0001" x="619" y="512" width="302" height="258" frameX="-22" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0002" x="0" y="770" width="318" height="253" frameX="-4" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0003" x="0" y="770" width="318" height="253" frameX="-4" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0004" x="318" y="770" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0005" x="611" y="770" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0006" x="0" y="1024" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0007" x="317" y="1024" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0008" x="634" y="1024" width="302" height="258" frameX="-22" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0009" x="634" y="1024" width="302" height="258" frameX="-22" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0010" x="0" y="770" width="318" height="253" frameX="-4" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0011" x="0" y="770" width="318" height="253" frameX="-4" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0012" x="318" y="770" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0013" x="318" y="770" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0014" x="0" y="1282" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
-	<SubTexture name="eyered0015" x="0" y="1282" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyedeadblue0000" x="619" y="512" width="302" height="258"/>
+	<SubTexture name="eyedeadblue0001" x="619" y="512" width="302" height="258"/>
+	<SubTexture name="eyedeadred0000" x="0" y="770" width="302" height="258"/>
+	<SubTexture name="eyered0000" x="302" y="770" width="302" height="258" frameX="-22" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0001" x="302" y="770" width="302" height="258" frameX="-22" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0002" x="604" y="770" width="318" height="253" frameX="-4" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0003" x="604" y="770" width="318" height="253" frameX="-4" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0004" x="0" y="1028" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0005" x="293" y="1028" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0006" x="586" y="1028" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0007" x="0" y="1282" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0008" x="317" y="1282" width="302" height="258" frameX="-22" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0009" x="317" y="1282" width="302" height="258" frameX="-22" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0010" x="604" y="770" width="318" height="253" frameX="-4" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0011" x="604" y="770" width="318" height="253" frameX="-4" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0012" x="0" y="1028" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0013" x="0" y="1028" width="293" height="254" frameX="-18" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0014" x="619" y="1282" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
+	<SubTexture name="eyered0015" x="619" y="1282" width="317" height="252" frameX="0" frameY="0" frameWidth="324" frameHeight="258"/>
 </TextureAtlas>

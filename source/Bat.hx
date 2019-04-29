@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxColor;
 
@@ -14,6 +15,15 @@ class Bat extends Enemy
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
 		super(X, Y, SimpleGraphic);
+		
+		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.bat__png, AssetPaths.bat__xml);
+		frames = tex;
+		
+		animation.addByPrefix("fly", "batfly", 24);
+		animation.play("fly");
+		
+		setGraphicSize(Std.int(width * 0.4));
+		updateHitbox();
 		
 		ETYPE = Enemy.BAT;
 		

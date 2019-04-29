@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bat.png">
+	<!-- Created with Adobe Animate version 19.2.0.405 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="batdead0000" x="0" y="0" width="199" height="261"/>
+	<SubTexture name="batdead0001" x="0" y="0" width="199" height="261"/>
+	<SubTexture name="batfly0000" x="199" y="0" width="328" height="198" frameX="-46" frameY="-29" frameWidth="374" frameHeight="345"/>
+	<SubTexture name="batfly0001" x="199" y="0" width="328" height="198" frameX="-46" frameY="-29" frameWidth="374" frameHeight="345"/>
+	<SubTexture name="batfly0002" x="527" y="0" width="256" height="250" frameX="-74" frameY="0" frameWidth="374" frameHeight="345"/>
+	<SubTexture name="batfly0003" x="527" y="0" width="256" height="250" frameX="-74" frameY="0" frameWidth="374" frameHeight="345"/>
+	<SubTexture name="batfly0004" x="0" y="261" width="359" height="164" frameX="0" frameY="-99" frameWidth="374" frameHeight="345"/>
+	<SubTexture name="batfly0005" x="0" y="261" width="359" height="164" frameX="0" frameY="-99" frameWidth="374" frameHeight="345"/>
+	<SubTexture name="batfly0006" x="359" y="261" width="199" height="261" frameX="-80" frameY="-84" frameWidth="374" frameHeight="345"/>
+	<SubTexture name="batfly0007" x="359" y="261" width="199" height="261" frameX="-80" frameY="-84" frameWidth="374" frameHeight="345"/>
+</TextureAtlas>

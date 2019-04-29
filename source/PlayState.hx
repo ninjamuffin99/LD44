@@ -13,6 +13,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.math.FlxVelocity;
 import flixel.text.FlxText;
@@ -219,6 +220,7 @@ class PlayState extends FlxState
 				FlxG.sound.music.time = 40400;
 				FlxG.sound.music.fadeIn(0.3, 0.5, 1);
 				waveTimer = 15;
+				_player.life += 0.10;
 			}
 		}
 		else
@@ -335,7 +337,9 @@ class PlayState extends FlxState
 			switch(e.ETYPE)
 			{
 				case Enemy.BAT:
-					FlxVelocity.moveTowardsPoint(e, _player.getMidpoint(), e.speed);
+					var pntOffset:FlxPoint = _player.getGraphicMidpoint();
+					pntOffset.x -= 100;
+					FlxVelocity.moveTowardsPoint(e, pntOffset, e.speed);
 			}
 		});
 		
@@ -356,10 +360,12 @@ class PlayState extends FlxState
 			
 			if (e.life <= 0)
 			{
-				var corpse:Corpse = new Corpse(e.x, e.y);
+				var corpse:Corpse = new Corpse(e.x, e.y, e.ETYPE);
 				corpse.velocity.x += b.velocity.x * 0.4;
 				corpse.velocity.y -= 460;
 				corpse.angularVelocity = corpse.velocity.x * 1.7;
+				if (FlxG.random.bool())
+					corpse.angularVelocity *= -1.1;
 				add(corpse);
 			}
 			
