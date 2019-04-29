@@ -17,9 +17,11 @@ class Bat extends Enemy
 		
 		ETYPE = Enemy.BAT;
 		
+		
+		damageDone = 0.01;
 		color = FlxColor.CYAN;
 		
-		speed *= FlxG.random.float(1.5, 2.8);
+		speed *= FlxG.random.float(1.5, 2.3);
 		life = 0.1;
 	}
 	

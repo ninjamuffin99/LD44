@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="pixie.png">
+	<!-- Created with Adobe Animate version 19.2.0.405 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="opix0000" x="0" y="0" width="112" height="115" frameX="-6" frameY="0" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0001" x="0" y="0" width="112" height="115" frameX="-6" frameY="0" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0002" x="0" y="0" width="112" height="115" frameX="-6" frameY="0" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0003" x="0" y="0" width="112" height="115" frameX="-6" frameY="0" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0004" x="0" y="0" width="112" height="115" frameX="-6" frameY="0" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0005" x="0" y="115" width="121" height="108" frameX="0" frameY="-6" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0006" x="0" y="115" width="121" height="108" frameX="0" frameY="-6" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0007" x="0" y="115" width="121" height="108" frameX="0" frameY="-6" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0008" x="0" y="115" width="121" height="108" frameX="0" frameY="-6" frameWidth="121" frameHeight="115"/>
+	<SubTexture name="opix0009" x="0" y="115" width="121" height="108" frameX="0" frameY="-6" frameWidth="121" frameHeight="115"/>
+</TextureAtlas>

@@ -5,7 +5,10 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.math.FlxMath;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 
 /**
@@ -28,6 +31,9 @@ class Player extends FlxSprite
 	private var boostCoolDown:Float = 0;
 	public var shootingCoolDown:Float = 0;
 
+	private var angleOffset:Float = 0.1;
+	public var canBoost:Bool = false;
+	
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
 		super(X, Y, SimpleGraphic);
@@ -52,10 +58,19 @@ class Player extends FlxSprite
 		drag.set(thaDrag, thaDrag);
 		
 		maxVelocity.set(maxVel, maxVel);
+		FlxTween.tween(this, {angleOffset: 5}, 2,  {ease:FlxEase.quadInOut, type:FlxTweenType.PINGPONG});
+		FlxTween.tween(this.offset, {y: offset.y + 20}, 1.2, {ease:FlxEase.quadInOut, type:FlxTweenType.PINGPONG});
+		
+		antialiasing = true;
 	}
+	
+	
 	
 	override public function update(elapsed:Float):Void 
 	{
+		angle = FlxMath.remapToRange(velocity.x, 0, maxVel, 0, 15);
+		angle += angleOffset;
+		
 		if (shootingCoolDown > 0)
 			shootingCoolDown -= FlxG.elapsed;
 		
@@ -164,7 +179,7 @@ class Player extends FlxSprite
 		else
 			acceleration.x = acceleration.y = 0;
 		
-		if (upP || downP || leftP || rightP)
+		if ((upP || downP || leftP || rightP) && canBoost)
 		{
 			var boostOld = boostDir;
 			

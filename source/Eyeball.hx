@@ -9,7 +9,6 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
  */
 class Eyeball extends Enemy 
 {
-
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
 		super(X, Y, SimpleGraphic);
@@ -23,7 +22,7 @@ class Eyeball extends Enemy
 	
 	override public function update(elapsed:Float):Void 
 	{
-		acceleration.x = -speed;
+		acceleration.x = speed;
 		maxVelocity.x = speed;
 		
 		super.update(elapsed);

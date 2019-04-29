@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxAngle;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxColor;
@@ -24,8 +25,14 @@ class Bullet extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0, Speed:Float, bullAngle:Float) 
 	{
 		super(X, Y);
+		var tex = FlxAtlasFrames.fromSpriteSheetPacker(AssetPaths.fireballs__png, AssetPaths.fireballs__txt);
+		frames = tex;
 		
-		makeGraphic(16, 8, FlxColor.RED);
+		animation.addByIndices("firered", "fireball", [1, 2, 3], "", 12);
+		animation.play("firered");
+		
+		setGraphicSize(0, 50);
+		updateHitbox();
 		width = 10;
 		height = 10;
 		offset.y = 5;

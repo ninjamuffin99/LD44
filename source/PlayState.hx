@@ -26,7 +26,7 @@ class PlayState extends FlxState
 	
 	private var enemiesLeft:Int = 0;
 	private var curWave:Int = 0;
-	private var waveTimer:Float = 15;
+	private var waveTimer:Float = 13;
 	
 	private var txtWaveTime:FlxText;
 	
@@ -40,13 +40,70 @@ class PlayState extends FlxState
 	
 	private var _book:Spellbook;
 	private var walls:FlxGroup;
+	private var sideWallsLol:FlxGroup;
 	
 	private var _camTrack:FlxObject;
+	private var grpPixies:FlxTypedGroup<Pixie>;
+	private var pixieSpawned:Bool = false;
 	
 	override public function create():Void
 	{
 		WORLDSIZE = new FlxRect(0, 0, FlxG.width * 4, FlxG.height * 4);
 		
+		initEnvironment();
+		
+		_player = new Player(WORLDSIZE.width / 2, WORLDSIZE.height / 2);
+		add(_player);
+		
+		grpEnemies = new FlxTypedGroup<Enemy>();
+		add(grpEnemies);
+		
+		grpPixies = new FlxTypedGroup<Pixie>();
+		add(grpPixies);
+		
+		grpBullets = new FlxTypedGroup<Bullet>();
+		add(grpBullets);
+		
+		initHUD();
+		
+		_camTrack = new FlxObject(0, 0, 1, 1);
+		add(_camTrack);
+		
+		FlxG.camera.focusOn(_player.getPosition());
+		
+		FlxG.camera.follow(_camTrack, FlxCameraFollowStyle.LOCKON, 0.1);
+		FlxG.camera.followLead.set(10, 5);
+		FlxG.camera.setScrollBounds(0, WORLDSIZE.width, 500, WORLDSIZE.height);
+		FlxG.worldBounds.set(0, 0, WORLDSIZE.width, WORLDSIZE.height);
+		
+		walls = new FlxGroup();
+		add(walls);
+		
+		sideWallsLol = new FlxGroup();
+		add(walls);
+		
+		var floor:FlxObject = new FlxObject(0, WORLDSIZE.height - 2, WORLDSIZE.width, 2);
+		floor.immovable = true;
+		walls.add(floor);
+		
+		var ceil:FlxObject = new FlxObject(0, 500, WORLDSIZE.width, 2);
+		ceil.immovable = true;
+		walls.add(ceil);
+		
+		var leftWall:FlxObject = new FlxObject(0, 0, 2, WORLDSIZE.height);
+		leftWall.immovable = true;
+		sideWallsLol.add(leftWall);
+		
+		var rightWall:FlxObject = new FlxObject(WORLDSIZE.width - 2, 0, 2, WORLDSIZE.height);
+		rightWall.immovable = true;
+		sideWallsLol.add(rightWall);
+		
+		
+		super.create();
+	}
+	
+	private function initEnvironment():Void
+	{
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.bg__png);
 		bg.scrollFactor.set(0.1, 0.2);
 		/*bg.setGraphicSize(Std.int(WORLDSIZE.width), Std.int(WORLDSIZE.height));
@@ -83,39 +140,7 @@ class PlayState extends FlxState
 		add(bg2);
 		
 		
-		_player = new Player(WORLDSIZE.width / 2, WORLDSIZE.height / 2);
-		add(_player);
 		
-		grpEnemies = new FlxTypedGroup<Enemy>();
-		add(grpEnemies);
-		
-		grpBullets = new FlxTypedGroup<Bullet>();
-		add(grpBullets);
-		
-		initHUD();
-		
-		_camTrack = new FlxObject(0, 0, 1, 1);
-		add(_camTrack);
-		
-		FlxG.camera.focusOn(_player.getPosition());
-		
-		FlxG.camera.follow(_camTrack, FlxCameraFollowStyle.LOCKON, 0.1);
-		FlxG.camera.followLead.set(10, 5);
-		FlxG.camera.setScrollBounds(0, WORLDSIZE.width, 500, WORLDSIZE.height);
-		FlxG.worldBounds.set(0, 0, WORLDSIZE.width, WORLDSIZE.height);
-		
-		walls = new FlxGroup();
-		add(walls);
-		
-		var floor:FlxObject = new FlxObject(0, WORLDSIZE.height - 2, WORLDSIZE.width, 2);
-		floor.immovable = true;
-		walls.add(floor);
-		
-		var ceil:FlxObject = new FlxObject(0, 500, WORLDSIZE.width, 2);
-		ceil.immovable = true;
-		walls.add(ceil);
-		
-		super.create();
 	}
 	
 	private function initHUD():Void
@@ -140,12 +165,18 @@ class PlayState extends FlxState
 		grpHUD.add(txtWaveTime);
 	}
 	
+	private var introSong:Bool = false;
 	private function generateEnemies():Void
 	{
 		if (enemiesLeft == 0)
 		{
 			if (waveTimer >= 0)
 			{
+				if (!introSong)
+				{
+					introSong = true;
+					FlxG.sound.playMusic(AssetPaths.intro__mp3, 1, false);
+				}
 				waveTimer -= FlxG.elapsed;
 				
 				if (waveTimer > 9)
@@ -174,7 +205,7 @@ class PlayState extends FlxState
 					}
 					else
 					{
-						var enemy:Eyeball = new Eyeball(WORLDSIZE.width + FlxG.random.float(0, 60), FlxG.random.float(0, WORLDSIZE.height - 30));
+						var enemy:Eyeball = new Eyeball(WORLDSIZE.width + FlxG.random.float(0, 60), _player.y + FlxG.random.float(-300, 300));
 						grpEnemies.add(enemy);
 					}
 					
@@ -183,6 +214,9 @@ class PlayState extends FlxState
 					enemiesLeft += 1;
 				}
 				
+				FlxG.sound.playMusic(AssetPaths.Cute_Witch_Bitch_69_loopable_new_drums__mp3, 1);
+				FlxG.sound.music.time = 40400;
+				FlxG.sound.music.fadeIn(0.3, 0.5, 1);
 				waveTimer = 15;
 			}
 		}
@@ -195,18 +229,20 @@ class PlayState extends FlxState
 		if (_player.shootingCoolDown <= 0 || isMultiple)
 		{
 			var dir:Int = 1;
-			if (_player.facing == FlxObject.LEFT && _book.spells.get("goLeft")[2])
+			if (_player.facing == FlxObject.LEFT)
 				dir = -1;
 			
-			var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180));
+			var xOffset:Float = -90;
+			
+			var bullet:Bullet = new Bullet(_player.getMidpoint().x + xOffset, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180));
 			grpBullets.add(bullet);
 			
 			if (_book.spells.get("triple2")[2])
 			{
-				var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 - 30));
+				var bullet:Bullet = new Bullet(_player.getMidpoint().x + xOffset, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 - 30));
 				grpBullets.add(bullet);
 				
-				var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 + 30));
+				var bullet:Bullet = new Bullet(_player.getMidpoint().x + xOffset, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 + 30));
 				grpBullets.add(bullet);
 			}
 			_player.shootingCoolDown = 0.3;
@@ -217,7 +253,20 @@ class PlayState extends FlxState
 	{
 		cameraHandle();
 		
+		if (!pixieSpawned)
+		{
+			if (_book.spells.get("pixie")[2])
+			{
+				pixieSpawned = true;
+				var pix:Pixie = new Pixie( -10, -10, _player);
+				grpPixies.add(pix);
+			}
+		}
+		
+		_player.canBoost = _book.spells.get("boost")[2];
+		
 		FlxG.collide(walls, _player);
+		FlxG.collide(sideWallsLol, _player);
 		FlxG.collide(walls, grpEnemies);
 		
 		if (_player.life <= 0)
@@ -246,11 +295,13 @@ class PlayState extends FlxState
 				//FlxG.sound.play(AssetPaths.phoneOff__mp3, 0.7);
 				goalY = 20;
 				curEase = FlxEase.backOut;
+				FlxG.sound.play(AssetPaths.bookOpen__mp3, 0.7);
 			}
 			else
 			{
 				goalY = FlxG.height + 160;
 				curEase = FlxEase.backIn;
+				FlxG.sound.play(AssetPaths.bookClose__mp3, 0.7);
 				//FlxG.sound.play(AssetPaths.phoneOn__wav, 0.7);
 				
 				//API.unlockMedal("MILLENIALS");
@@ -258,15 +309,27 @@ class PlayState extends FlxState
 			
 			FlxTween.tween(_book, {y: goalY}, 0.5, {ease:curEase});
 			
+			
+			
 			_book.on = !_book.on;
+			
+			
 		}
 		
 		super.update(elapsed);
 		
 		grpEnemies.forEachAlive(function(e:Enemy)
 		{
-			if (e.x <= -20)
+			if (e.x <= -50)
+			{
+				e.y = _player.y + FlxG.random.float( -300, 300);
 				e.x = WORLDSIZE.width;
+			}
+			if (e.x >= WORLDSIZE.width + 60)
+			{
+				e.x = -20;
+				e.y = _player.y + FlxG.random.float( -300, 300);
+			}
 			
 			switch(e.ETYPE)
 			{
@@ -280,6 +343,15 @@ class PlayState extends FlxState
 			e.life -= b.damage;
 			e.velocity.x += b.velocity.x;
 			e.velocity.y += b.velocity.y;
+			
+			if (e.life <= 0)
+			{
+				var corpse:Corpse = new Corpse(e.x, e.y);
+				corpse.velocity.x += b.velocity.x * 0.4;
+				corpse.velocity.y -= 460;
+				corpse.angularVelocity = corpse.velocity.x * 1.7;
+				add(corpse);
+			}
 			
 			b.kill();
 			
@@ -300,7 +372,9 @@ class PlayState extends FlxState
 				p.velocity.y += ydir * pulseShit;
 				p.velocity.x += xdir * pulseShit;
 				
-				e.kill();
+				pulseShit *= 0.5;
+				e.velocity.y -= ydir * pulseShit;
+				e.velocity.x -= xdir * pulseShit;
 				
 				_player.life -= e.damageDone;
 				_player.invincibleStart();
