@@ -17,6 +17,7 @@ class Corpse extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0, etype:Int) 
 	{
 		super(X, Y);
+		FlxG.sound.play(AssetPaths.enemyDeath__mp3, 0.3);
 		
 		makeGraphic(70, 20, FlxColor.BROWN);
 		acceleration.y = 600;
@@ -32,6 +33,16 @@ class Corpse extends FlxSprite
 				
 				animation.addByPrefix("ded", "eyedeadblue", 24);
 				animation.play("ded");
+			case Enemy.BAT:
+				var tex = FlxAtlasFrames.fromSparrow(AssetPaths.bat__png, AssetPaths.bat__xml);
+				frames = tex;
+				
+				animation.addByPrefix("fly", "batdead", 24);
+				animation.play("fly");
+				
+				setGraphicSize(Std.int(width * 0.24));
+				updateHitbox();
+				
 		}
 		
 		

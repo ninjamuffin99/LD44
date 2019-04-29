@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 class Bullet extends FlxSprite 
 {
 
-	private var life:Float = 3;
+	private var life:Float = 2;
 	public var speed:Float;
 	private var angleOffset:Float = 0;
 	public var accuracy:Float = 1;

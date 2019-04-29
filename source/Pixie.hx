@@ -23,7 +23,7 @@ class Pixie extends FlxSprite
 		
 		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.pixie__png, AssetPaths.pixie__xml);
 		frames = tex;
-		animation.add("idle", [0, 1], 6);
+		animation.addByPrefix("idle", "opix", 24);
 		animation.play("idle");
 		
 		setGraphicSize(Std.int(width * 0.7));

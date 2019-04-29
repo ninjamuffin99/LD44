@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 
 /**
@@ -18,7 +19,10 @@ class Enemy extends FlxSprite
 	public var ETYPE:Int = 0;
 	
 	public static inline var EYEBALL:Int = 1;
+	public static inline var EYERED:Int = 2;
 	public static inline var BAT:Int = 10;
+	
+	public var daSound:FlxSound;
 	
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{

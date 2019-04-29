@@ -7,6 +7,7 @@ import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.system.FlxSound;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
@@ -34,10 +35,17 @@ class Player extends FlxSprite
 
 	private var angleOffset:Float = 0.1;
 	public var canBoost:Bool = false;
+	private var flySound:FlxSound;
 	
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
 		super(X, Y, SimpleGraphic);
+		
+		flySound = new FlxSound();
+		flySound.loadEmbedded(AssetPaths.flyingLoop__mp3, true);
+		flySound.play();
+		flySound.volume = 0;
+		FlxG.sound.defaultSoundGroup.add(flySound);
 		
 		//makeGraphic(100, 60);
 		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.witch__png, AssetPaths.witch__xml);
@@ -74,6 +82,33 @@ class Player extends FlxSprite
 	{
 		angle = FlxMath.remapToRange(velocity.x, 0, maxVel, 0, 15);
 		angle += angleOffset;
+		
+		
+		
+		if (velocity.y != 0)
+		{
+			if (velocity.y >= 0)
+			{
+				animation.curAnim.frameRate = Std.int(FlxMath.remapToRange(velocity.y, 0, maxVelocity.y, 12, 25));
+			}
+			else
+			{
+				animation.curAnim.frameRate = Std.int(FlxMath.remapToRange(velocity.y, 0, maxVelocity.y, 25, 12));
+			}
+		}
+		else
+		{
+			if (velocity.x >= 0)
+			{
+				animation.curAnim.frameRate = Std.int(FlxMath.remapToRange(velocity.x, 0, maxVelocity.x, 12, 25));
+			}
+			else
+			{
+				animation.curAnim.frameRate = Std.int(FlxMath.remapToRange(velocity.x, 0, maxVelocity.x, 25, 12));
+			}
+		}
+		
+		
 		
 		if (shootingCoolDown > 0)
 			shootingCoolDown -= FlxG.elapsed;
@@ -147,6 +182,9 @@ class Player extends FlxSprite
 		
 		if (up || down || right || left)
 		{
+			if (flySound.volume < 0.5)
+				flySound.volume += 0.3 * FlxG.elapsed;
+			
 			if (up || down)
 			{
 				if (up)
@@ -167,72 +205,86 @@ class Player extends FlxSprite
 				if (left)
 				{
 					if (!FlxG.keys.pressed.SHIFT)
+					{
+						if (facing == FlxObject.RIGHT)
+							FlxG.sound.play(AssetPaths.turn__mp3, 0.6);
 						facing = FlxObject.LEFT;
+					}
 					acceleration.x = -speed;
 				}
 				else
 				{
 					if (!FlxG.keys.pressed.SHIFT)
+					{
+						if (facing == FlxObject.LEFT)
+							FlxG.sound.play(AssetPaths.turn__mp3, 0.6);
 						facing = FlxObject.RIGHT;
+					}
 					acceleration.x = speed;
 				}
 			}
 			else
 				acceleration.x = 0;
 			
-			
 		}
 		else
-			acceleration.x = acceleration.y = 0;
-		
-		if ((upP || downP || leftP || rightP) && canBoost)
 		{
-			var boostOld = boostDir;
+			if (flySound.volume > 0.10)
+				flySound.volume -= 0.34 * FlxG.elapsed;
+			acceleration.x = acceleration.y = 0;
+		}
+		
+		if (upP || downP || leftP || rightP)
+		{
 			
-			if (upP)
+			if (canBoost)
 			{
-				boostDir = FlxObject.UP;
-			}
-			else if (downP)
-			{
-				boostDir = FlxObject.DOWN;
-			}
-			else if (leftP)
-			{
-				boostDir = FlxObject.LEFT;
-			}
-			else if (rightP)
-			{
-				boostDir = FlxObject.RIGHT;
-			}
-			
-			if (boostTmr <= 0.3 && boostOld == boostDir && boostCoolDown <= 0)
-			{
-				FlxG.log.add("BOOSTED");
-				//velocity.set(velocity.x * 0.1, velocity.y * 0.1);
-				
-				var velMult:Float = 2.2;
-				maxVelocity.set(maxVel * velMult, maxVel * velMult);
-				switch(boostDir)
+				var boostOld = boostDir;
+				if (upP)
 				{
-					case FlxObject.UP:
-						velocity.y *= 0.1;
-						velocity.y -= maxVel * velMult;
-					case FlxObject.DOWN:
-						velocity.y *= 0.1;
-						velocity.y += maxVel * velMult;
-					case FlxObject.LEFT:
-						velocity.x *= 0.1;
-						velocity.x -= maxVel * velMult;
-					case FlxObject.RIGHT:
-						velocity.x *= 0.1;
-						velocity.x += maxVel * velMult;
+					boostDir = FlxObject.UP;
+				}
+				else if (downP)
+				{
+					boostDir = FlxObject.DOWN;
+				}
+				else if (leftP)
+				{
+					boostDir = FlxObject.LEFT;
+				}
+				else if (rightP)
+				{
+					boostDir = FlxObject.RIGHT;
 				}
 				
-				boostCoolDown = 0.5;
+				if (boostTmr <= 0.3 && boostOld == boostDir && boostCoolDown <= 0)
+				{
+					FlxG.log.add("BOOSTED");
+					//velocity.set(velocity.x * 0.1, velocity.y * 0.1);
+					
+					var velMult:Float = 2.2;
+					maxVelocity.set(maxVel * velMult, maxVel * velMult);
+					switch(boostDir)
+					{
+						case FlxObject.UP:
+							velocity.y *= 0.1;
+							velocity.y -= maxVel * velMult;
+						case FlxObject.DOWN:
+							velocity.y *= 0.1;
+							velocity.y += maxVel * velMult;
+						case FlxObject.LEFT:
+							velocity.x *= 0.1;
+							velocity.x -= maxVel * velMult;
+						case FlxObject.RIGHT:
+							velocity.x *= 0.1;
+							velocity.x += maxVel * velMult;
+					}
+					
+					boostCoolDown = 0.5;
+				}
+				
+				boostTmr = 0;
 			}
-			
-			boostTmr = 0;
 		}
 	}
 }

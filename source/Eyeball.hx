@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.system.FlxSound;
 
 /**
  * ...
@@ -10,9 +11,12 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
  */
 class Eyeball extends Enemy 
 {
-	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
+	private var theEyeType:Int = 0;
+	
+	
+	public function new(?X:Float=0, ?Y:Float=0, eyeType:Int = 0) 
 	{
-		super(X, Y, SimpleGraphic);
+		super(X, Y);
 		
 		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.eyeball__png, AssetPaths.eyeball__xml);
 		frames = tex;
@@ -22,9 +26,18 @@ class Eyeball extends Enemy
 		
 		animation.addByPrefix("blue", "eyeblue", 24);
 		animation.addByPrefix("red", "eyered", 24);
-		animation.play("blue");
 		
-		ETYPE = Enemy.EYEBALL;
+		switch(eyeType)
+		{
+			case 0:
+				animation.play("blue");
+				ETYPE = Enemy.EYEBALL;
+			case 1:
+				animation.play("blue");
+				ETYPE = Enemy.EYERED;
+		}
+		
+		theEyeType = eyeType;
 		
 		speed *= FlxG.random.float(1.7, 2.3);
 		
@@ -33,8 +46,15 @@ class Eyeball extends Enemy
 	
 	override public function update(elapsed:Float):Void 
 	{
-		acceleration.x = speed;
-		maxVelocity.x = speed;
+		switch(theEyeType)
+		{
+			case 0:
+				acceleration.x = speed;
+				maxVelocity.x = speed;
+			case 1:
+				
+		}
+		
 		
 		super.update(elapsed);
 	}

@@ -100,7 +100,6 @@ class PlayState extends FlxState
 		rightWall.immovable = true;
 		sideWallsLol.add(rightWall);
 		
-		
 		super.create();
 	}
 	
@@ -178,6 +177,12 @@ class PlayState extends FlxState
 				{
 					introSong = true;
 					FlxG.sound.playMusic(AssetPaths.intro__mp3, 1, false);
+					
+					if (curWave > 0)
+					{
+						_player.life += 0.10;
+						FlxG.sound.play(AssetPaths.waveSuccess__mp3, 1);
+					}
 				}
 				waveTimer -= FlxG.elapsed;
 				
@@ -220,7 +225,7 @@ class PlayState extends FlxState
 				FlxG.sound.music.time = 40400;
 				FlxG.sound.music.fadeIn(0.3, 0.5, 1);
 				waveTimer = 15;
-				_player.life += 0.10;
+				introSong = false;
 			}
 		}
 		else
@@ -231,6 +236,8 @@ class PlayState extends FlxState
 	{
 		if (_player.shootingCoolDown <= 0 || isMultiple)
 		{
+			FlxG.sound.play("assets/sounds/phantomshit/shoot1.mp3", FlxG.random.float(0.4, 0.5));
+			
 			var dir:Int = 1;
 			if (_player.facing == FlxObject.LEFT)
 				dir = -1;
@@ -239,7 +246,7 @@ class PlayState extends FlxState
 			
 			var bullet:Bullet = new Bullet(_player.getMidpoint().x + xOffset, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180));
 			grpBullets.add(bullet);
-			
+			/*
 			if (_book.spells.get("triple2")[2])
 			{
 				var bullet:Bullet = new Bullet(_player.getMidpoint().x + xOffset, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 - 30));
@@ -248,6 +255,7 @@ class PlayState extends FlxState
 				var bullet:Bullet = new Bullet(_player.getMidpoint().x + xOffset, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 + 30));
 				grpBullets.add(bullet);
 			}
+			*/
 			_player.shootingCoolDown = 0.3;
 		}
 	}
@@ -275,17 +283,22 @@ class PlayState extends FlxState
 		if (_player.life <= 0)
 			FlxG.resetState();
 		
-		if (FlxG.mouse.justPressed)
+		if (FlxG.mouse.justPressed || FlxG.keys.justPressed.SPACE)
 		{
-			shootBullet();
-			
-			if (_book.spells.get("triple")[2])
+			if (!_book.on)
 			{
-				new FlxTimer().start(0.1, function(tmr:FlxTimer)
+				
+				shootBullet();
+				
+				if (_book.spells.get("triple")[2])
 				{
-					shootBullet(true);
-				}, 2);
+					new FlxTimer().start(0.1, function(tmr:FlxTimer)
+					{
+						shootBullet(true);
+					}, 2);
+				}
 			}
+			
 		}
 		
 		if (FlxG.keys.justPressed.E)
@@ -323,6 +336,7 @@ class PlayState extends FlxState
 		
 		grpEnemies.forEachAlive(function(e:Enemy)
 		{
+			
 			if (e.x <= -50)
 			{
 				e.y = _player.y + FlxG.random.float( -300, 300);
@@ -357,6 +371,7 @@ class PlayState extends FlxState
 			e.life -= b.damage;
 			e.velocity.x += b.velocity.x;
 			e.velocity.y += b.velocity.y;
+			FlxG.sound.play(AssetPaths.enemyHit__mp3, 0.5);
 			
 			if (e.life <= 0)
 			{
@@ -376,7 +391,7 @@ class PlayState extends FlxState
 		
 		FlxG.overlap(_player, grpEnemies, function(p:Player, e:Enemy)
 		{
-			if (_player.boostCoolDown > 0 && _player.boostDir == FlxObject.DOWN && _player.bootyCooldown <= 0)
+			if (_player.boostCoolDown > 0 && _player.boostDir == FlxObject.DOWN && _player.bootyCooldown <= 0 && _book.spells.get("ass")[2])
 			{
 				var pulseShit:Float = 1500;
 				
