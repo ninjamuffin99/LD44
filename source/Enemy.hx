@@ -15,6 +15,8 @@ class Enemy extends FlxSprite
 	private var followPlayer:Bool = false;
 	public var damageDone:Float = 0.05;
 	public var life:Float = 0.1;
+	public var laserTimer:Float = 0;
+	public var _player:Player;
 	
 	public var ETYPE:Int = 0;
 	

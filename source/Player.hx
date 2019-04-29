@@ -182,7 +182,7 @@ class Player extends FlxSprite
 		
 		if (up || down || right || left)
 		{
-			if (flySound.volume < 0.5)
+			if (flySound.volume < 0.4)
 				flySound.volume += 0.3 * FlxG.elapsed;
 			
 			if (up || down)

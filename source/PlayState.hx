@@ -7,6 +7,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.effects.FlxFlicker;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
@@ -19,6 +20,7 @@ import flixel.math.FlxVelocity;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
@@ -33,6 +35,7 @@ class PlayState extends FlxState
 	private var txtWaveTime:FlxText;
 	
 	private var grpBullets:FlxTypedGroup<Bullet>;
+	private var grpLasers:FlxTypedGroup<Laser>;
 	private var grpEnemies:FlxTypedGroup<Enemy>;
 	
 	private var txtHUD:FlxText;
@@ -65,6 +68,9 @@ class PlayState extends FlxState
 		
 		grpBullets = new FlxTypedGroup<Bullet>();
 		add(grpBullets);
+		
+		grpLasers = new FlxTypedGroup<Laser>();
+		add(grpLasers);
 		
 		initHUD();
 		
@@ -146,10 +152,26 @@ class PlayState extends FlxState
 	
 	private function initHUD():Void
 	{
+		var bookTx = FlxAtlasFrames.fromSparrow(AssetPaths.bookicon__png, AssetPaths.bookicon__xml);
+		
+		var btnBook:FlxSpriteButton = new FlxSpriteButton(30, FlxG.height - 10, null);
+		btnBook.frames = bookTx;
+		btnBook.setGraphicSize(Std.int(btnBook.width * 0.5));
+		btnBook.updateHitbox();
+		btnBook.y -= btnBook.height;
+		btnBook.animation.add("sdf", [0, 1], 0);
+		btnBook.animation.play("sdf");
+		btnBook.scrollFactor.set();
+		btnBook.onOver.callback = function(){btnBook.animation.curAnim.curFrame = 1; };
+		btnBook.onOut.callback = function(){btnBook.animation.curAnim.curFrame = 0; };
+		add(btnBook);
+		
 		//THE BOOK SHIT
 		_book = new Spellbook(0, FlxG.height, _player);
 		_book.scrollFactor.set();
 		add(_book);
+		
+		btnBook.onUp.callback = function(){openBook(); };
 		
 		//THE ACTUAL HUD
 		grpHUD = new FlxSpriteGroup();
@@ -181,7 +203,7 @@ class PlayState extends FlxState
 					if (curWave > 0)
 					{
 						_player.life += 0.10;
-						FlxG.sound.play(AssetPaths.waveSuccess__mp3, 1);
+						FlxG.sound.play(AssetPaths.waveSuccess__mp3, 0.6);
 					}
 				}
 				waveTimer -= FlxG.elapsed;
@@ -212,7 +234,12 @@ class PlayState extends FlxState
 					}
 					else
 					{
-						var enemy:Eyeball = new Eyeball(WORLDSIZE.width + FlxG.random.float(0, 60), _player.y + FlxG.random.float(-300, 300));
+						var daType:Int = Enemy.EYEBALL;
+						if (FlxG.random.bool(5 * curWave))
+							daType = Enemy.EYERED;
+						
+						var enemy:Eyeball = new Eyeball(WORLDSIZE.width + FlxG.random.float(0, 60), _player.y + FlxG.random.float( -300, 300), daType);
+						enemy._player = _player;
 						grpEnemies.add(enemy);
 					}
 					
@@ -260,6 +287,32 @@ class PlayState extends FlxState
 		}
 	}
 	
+	private function openBook():Void
+	{
+		var goalY:Float = 0;
+			var curEase;
+			
+			if (!_book.on && waveTimer > 0)
+			{
+				//FlxG.sound.play(AssetPaths.phoneOff__mp3, 0.7);
+				goalY = 20;
+				curEase = FlxEase.backOut;
+				FlxG.sound.play(AssetPaths.bookOpen__mp3, 0.7);
+			}
+			else
+			{
+				goalY = FlxG.height + 160;
+				curEase = FlxEase.backIn;
+				FlxG.sound.play(AssetPaths.bookClose__mp3, 0.7);
+				//FlxG.sound.play(AssetPaths.phoneOn__wav, 0.7);
+				
+				//API.unlockMedal("MILLENIALS");
+			}
+			FlxTween.tween(_book, {y: goalY}, 0.5, {ease:curEase});
+			
+			_book.on = !_book.on;
+	}
+	
 	override public function update(elapsed:Float):Void
 	{
 		cameraHandle();
@@ -287,7 +340,6 @@ class PlayState extends FlxState
 		{
 			if (!_book.on)
 			{
-				
 				shootBullet();
 				
 				if (_book.spells.get("triple")[2])
@@ -298,45 +350,17 @@ class PlayState extends FlxState
 					}, 2);
 				}
 			}
-			
 		}
 		
 		if (FlxG.keys.justPressed.E)
 		{
-			var goalY:Float = 0;
-			var curEase;
-			
-			if (!_book.on && waveTimer > 0)
-			{
-				//FlxG.sound.play(AssetPaths.phoneOff__mp3, 0.7);
-				goalY = 20;
-				curEase = FlxEase.backOut;
-				FlxG.sound.play(AssetPaths.bookOpen__mp3, 0.7);
-			}
-			else
-			{
-				goalY = FlxG.height + 160;
-				curEase = FlxEase.backIn;
-				FlxG.sound.play(AssetPaths.bookClose__mp3, 0.7);
-				//FlxG.sound.play(AssetPaths.phoneOn__wav, 0.7);
-				
-				//API.unlockMedal("MILLENIALS");
-			}
-			
-			FlxTween.tween(_book, {y: goalY}, 0.5, {ease:curEase});
-			
-			
-			
-			_book.on = !_book.on;
-			
-			
+			openBook();
 		}
 		
 		super.update(elapsed);
 		
 		grpEnemies.forEachAlive(function(e:Enemy)
 		{
-			
 			if (e.x <= -50)
 			{
 				e.y = _player.y + FlxG.random.float( -300, 300);
@@ -354,7 +378,25 @@ class PlayState extends FlxState
 					var pntOffset:FlxPoint = _player.getGraphicMidpoint();
 					pntOffset.x -= 100;
 					FlxVelocity.moveTowardsPoint(e, pntOffset, e.speed);
+				case Enemy.EYERED:
+					if (e.laserTimer <= 0)
+					{
+						e.laserTimer = FlxG.random.float(3, 8);
+						var lzr:Laser = new Laser(e.getMidpoint().x, e.getMidpoint().y, 500, FlxAngle.angleBetweenPoint(e, _player.getMidpoint()));
+						grpLasers.add(lzr);
+					}
 			}
+		});
+		
+		FlxG.overlap(grpLasers, _player, function(l:Laser, p:Player)
+		{
+			l.kill();
+			
+			p.velocity.x += l.velocity.x;
+			p.velocity.y += l.velocity.y;
+			p.life -= 0.02;
+			
+			_player.invincibleStart();
 		});
 		
 		FlxG.overlap(grpEnemies, grpPixies, function(e:Enemy, p:Pixie)
@@ -439,7 +481,7 @@ class PlayState extends FlxState
 		
 		enemiesLeft = enCount;
 		
-		txtHUD.text = "Enemies left: " + enemiesLeft + " --- Wave: " + curWave + " --- LIFE: " + FlxMath.roundDecimal(_player.life, 2) * 100 + "%";
+		txtHUD.text = "Enemies left: " + enemiesLeft + " --- Wave: " + curWave + " --- LIFE: " + Std.int(FlxMath.roundDecimal(_player.life, 2) * 100) + "%";
 		generateEnemies();
 	}
 	
