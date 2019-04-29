@@ -1,5 +1,6 @@
 package;
 
+import flash.display.PixelSnapping;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -258,7 +259,7 @@ class PlayState extends FlxState
 			if (_book.spells.get("pixie")[2])
 			{
 				pixieSpawned = true;
-				var pix:Pixie = new Pixie( -10, -10, _player);
+				var pix:Pixie = new Pixie( _player.x - 200, _player.y, _player);
 				grpPixies.add(pix);
 			}
 		}
@@ -338,6 +339,15 @@ class PlayState extends FlxState
 			}
 		});
 		
+		FlxG.overlap(grpEnemies, grpPixies, function(e:Enemy, p:Pixie)
+		{
+			e.life -= 0.05;
+			e.velocity.x += p.velocity.x * 1.5;
+			e.velocity.y += p.velocity.y * 1.5;
+			p.velocity.y -= e.velocity.y;
+			p.velocity.y -= e.velocity.y;
+		});
+		
 		FlxG.overlap(grpBullets, grpEnemies, function(b:Bullet, e:Enemy)
 		{
 			e.life -= b.damage;
@@ -360,7 +370,26 @@ class PlayState extends FlxState
 		
 		FlxG.overlap(_player, grpEnemies, function(p:Player, e:Enemy)
 		{
-			if (!_player.invincible)
+			if (_player.boostCoolDown > 0 && _player.boostDir == FlxObject.DOWN && _player.bootyCooldown <= 0)
+			{
+				var pulseShit:Float = 1500;
+				
+				var daAngle:Float = Math.atan2(p.getMidpoint().y - e.getMidpoint().y, p.getMidpoint().x - e.getMidpoint().x);
+				
+				var xdir = Math.cos(daAngle);
+				var ydir = Math.sin(daAngle);
+				
+				p.velocity.y += ydir * pulseShit;
+				p.velocity.x += xdir * pulseShit;
+				
+				pulseShit *= 0.5;
+				e.velocity.y -= ydir * pulseShit;
+				e.velocity.x -= xdir * pulseShit;
+				
+				e.life -= 0.1;
+				_player.bootyCooldown = 0.3;
+			}
+			else if (!_player.invincible && _player.bootyCooldown <= 0)
 			{
 				var pulseShit:Float = 1500;
 				

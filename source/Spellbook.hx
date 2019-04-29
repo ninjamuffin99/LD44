@@ -156,8 +156,8 @@ class Spellbook extends FlxSpriteGroup
 		spells.set("triple", ["Shoots 3 bullets in a burst!", 			0.05, false, "Trio Spellshit"]);
 		spells.set("triple2", ["Shoots bullets in multi directions!", 	0.05, false, "Oh baby a tripel"]);
 		spells.set("boost", ["Double tap a direction to do a dash!", 	0.05, false, "Coolboost"]);
-		spells.set("pixie", ["A pixie helps you defeat enemies!", 		0.05, false, "Smol help"]);
-		spells.set("pixie2", ["", 		0.05, false, ""]);
+		spells.set("pixie", ["A pixie helps you defeat enemies!", 		0.1, false, "Smol help"]);
+		spells.set("ass", ["Dashing downwards deals damage!", 			0.1, false, "Booty bounce"]);
 		spells.set("pixie3", ["", 		0.05, false, ""]);
 		spells.set("pixie4", ["", 		0.05, false, ""]);
 	}
@@ -168,7 +168,8 @@ class Spellbook extends FlxSpriteGroup
 		"triple2",
 		"boost",
 		"pixie",
-		"pixie2",
+		"ass",
+		"pixie3",
 		"pixie4"
 	];
 }

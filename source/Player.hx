@@ -26,10 +26,11 @@ class Player extends FlxSprite
 	
 	public var on:Bool = false;
 	
-	private var boostDir:Int = 0;
+	public var boostDir:Int = 0;
 	private var boostTmr:Float = 0;
-	private var boostCoolDown:Float = 0;
+	public var boostCoolDown:Float = 0;
 	public var shootingCoolDown:Float = 0;
+	public var bootyCooldown:Float = 0;
 
 	private var angleOffset:Float = 0.1;
 	public var canBoost:Bool = false;
@@ -42,10 +43,14 @@ class Player extends FlxSprite
 		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.witch__png, AssetPaths.witch__xml);
 		frames = tex;
 		
+		animation.addByPrefix("idle", "witch final copy", 24);
+		animation.addByPrefix("alt", "witchalt", 24);
+		animation.play("idle");
+		
 		setFacingFlip(FlxObject.LEFT, true, false);
 		setFacingFlip(FlxObject.RIGHT, false, false);
 		
-		setGraphicSize(Std.int(width * 0.6));
+		setGraphicSize(Std.int(width * 0.38));
 		updateHitbox();
 		
 		offset.y = 70;
@@ -54,6 +59,7 @@ class Player extends FlxSprite
 		offset.x = 200;
 		width -= 190;
 		
+		centerOffsets();
 		
 		drag.set(thaDrag, thaDrag);
 		
@@ -64,8 +70,6 @@ class Player extends FlxSprite
 		antialiasing = true;
 	}
 	
-	
-	
 	override public function update(elapsed:Float):Void 
 	{
 		angle = FlxMath.remapToRange(velocity.x, 0, maxVel, 0, 15);
@@ -73,13 +77,15 @@ class Player extends FlxSprite
 		
 		if (shootingCoolDown > 0)
 			shootingCoolDown -= FlxG.elapsed;
+		if (bootyCooldown > 0)
+			bootyCooldown -= FlxG.elapsed;
 		
 		switch (facing)
 		{
 			case FlxObject.LEFT:
-				offset.x = 150;
+				//offset.x = 150;
 			case FlxObject.RIGHT:
-				offset.x = 200;
+				//offset.x = 200;
 		}
 		
 		if (!on)
