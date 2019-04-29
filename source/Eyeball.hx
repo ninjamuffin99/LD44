@@ -14,6 +14,8 @@ class Eyeball extends Enemy
 	{
 		super(X, Y, SimpleGraphic);
 		
+		ETYPE = Enemy.EYEBALL;
+		
 		speed *= FlxG.random.float(1.7, 2.3);
 		
 		life = 0.2;

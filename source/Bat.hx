@@ -15,9 +15,18 @@ class Bat extends Enemy
 	{
 		super(X, Y, SimpleGraphic);
 		
+		ETYPE = Enemy.BAT;
+		
 		color = FlxColor.CYAN;
 		
-		speed *= FlxG.random.float(2, 3);
+		speed *= FlxG.random.float(1.5, 2.8);
+		life = 0.1;
+	}
+	
+	override public function kill():Void 
+	{
+		FlxG.log.add("DIED???");
+		super.kill();
 	}
 	
 }

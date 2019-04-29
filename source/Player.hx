@@ -22,6 +22,11 @@ class Player extends FlxSprite
 	public var invincible:Bool = false;
 	
 	public var on:Bool = false;
+	
+	private var boostDir:Int = 0;
+	private var boostTmr:Float = 0;
+	private var boostCoolDown:Float = 0;
+	public var shootingCoolDown:Float = 0;
 
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
 	{
@@ -51,6 +56,9 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
+		if (shootingCoolDown > 0)
+			shootingCoolDown -= FlxG.elapsed;
+		
 		switch (facing)
 		{
 			case FlxObject.LEFT:
@@ -93,6 +101,24 @@ class Player extends FlxSprite
 		var left:Bool = FlxG.keys.anyPressed(["LEFT", "A"]);
 		var right:Bool = FlxG.keys.anyPressed(["RIGHT", "D"]);
 		
+		var upP:Bool = FlxG.keys.anyJustPressed(["UP", "W"]);
+		var downP:Bool = FlxG.keys.anyJustPressed(["DOWN", "S"]);
+		var leftP:Bool = FlxG.keys.anyJustPressed(["LEFT", "A"]);
+		var rightP:Bool = FlxG.keys.anyJustPressed(["RIGHT", "D"]);
+		
+		// only does it for a second, little baby ass optimization lol
+		if (boostTmr < 1)
+			boostTmr += FlxG.elapsed;
+		
+		if (boostCoolDown > 0)
+			boostCoolDown -= FlxG.elapsed;
+		
+		if (maxVelocity.x > maxVel)
+		{
+			maxVelocity.x -= 10;
+			maxVelocity.y -= 10;
+		}
+		
 		if (up && down)
 			up = down = false;
 		if (left && right)
@@ -119,12 +145,14 @@ class Player extends FlxSprite
 			{
 				if (left)
 				{
-					facing = FlxObject.LEFT;
+					if (!FlxG.keys.pressed.SHIFT)
+						facing = FlxObject.LEFT;
 					acceleration.x = -speed;
 				}
 				else
 				{
-					facing = FlxObject.RIGHT;
+					if (!FlxG.keys.pressed.SHIFT)
+						facing = FlxObject.RIGHT;
 					acceleration.x = speed;
 				}
 			}
@@ -135,5 +163,55 @@ class Player extends FlxSprite
 		}
 		else
 			acceleration.x = acceleration.y = 0;
+		
+		if (upP || downP || leftP || rightP)
+		{
+			var boostOld = boostDir;
+			
+			if (upP)
+			{
+				boostDir = FlxObject.UP;
+			}
+			else if (downP)
+			{
+				boostDir = FlxObject.DOWN;
+			}
+			else if (leftP)
+			{
+				boostDir = FlxObject.LEFT;
+			}
+			else if (rightP)
+			{
+				boostDir = FlxObject.RIGHT;
+			}
+			
+			if (boostTmr <= 0.3 && boostOld == boostDir && boostCoolDown <= 0)
+			{
+				FlxG.log.add("BOOSTED");
+				//velocity.set(velocity.x * 0.1, velocity.y * 0.1);
+				
+				var velMult:Float = 2.2;
+				maxVelocity.set(maxVel * velMult, maxVel * velMult);
+				switch(boostDir)
+				{
+					case FlxObject.UP:
+						velocity.y *= 0.1;
+						velocity.y -= maxVel * velMult;
+					case FlxObject.DOWN:
+						velocity.y *= 0.1;
+						velocity.y += maxVel * velMult;
+					case FlxObject.LEFT:
+						velocity.x *= 0.1;
+						velocity.x -= maxVel * velMult;
+					case FlxObject.RIGHT:
+						velocity.x *= 0.1;
+						velocity.x += maxVel * velMult;
+				}
+				
+				boostCoolDown = 0.5;
+			}
+			
+			boostTmr = 0;
+		}
 	}
 }

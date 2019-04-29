@@ -48,9 +48,40 @@ class PlayState extends FlxState
 		WORLDSIZE = new FlxRect(0, 0, FlxG.width * 4, FlxG.height * 4);
 		
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.bg__png);
-		bg.setGraphicSize(Std.int(WORLDSIZE.width), Std.int(WORLDSIZE.height));
-		bg.updateHitbox();
+		bg.scrollFactor.set(0.1, 0.2);
+		/*bg.setGraphicSize(Std.int(WORLDSIZE.width), Std.int(WORLDSIZE.height));
+		bg.updateHitbox();*/
 		add(bg);
+		
+		var clouds1:FlxSprite = new FlxSprite(0, WORLDSIZE.height * 0.2).loadGraphic(AssetPaths.cloudsLong__png);
+		clouds1.scrollFactor.set(0.35, 0.35);
+		clouds1.alpha = 0.6;
+		add(clouds1);
+		FlxTween.tween(clouds1, {x: FlxG.width * 0.5}, 40, {type:FlxTweenType.PINGPONG});
+		
+		var moreCloudsLol:FlxSprite = new FlxSprite(0, WORLDSIZE.height * 0.1).loadGraphic(AssetPaths.cloudsFew__png);
+		moreCloudsLol.setGraphicSize(Std.int(moreCloudsLol.width * 0.6));
+		moreCloudsLol.updateHitbox();
+		moreCloudsLol.scrollFactor.set(0.25, 0.25);
+		moreCloudsLol.alpha = 0.4;
+		add(moreCloudsLol);
+		FlxTween.tween(moreCloudsLol, {x: FlxG.width * 0.3}, 40, {type:FlxTweenType.PINGPONG});
+		
+		var bg1:FlxSprite = new FlxSprite(0, WORLDSIZE.height * 0.04).loadGraphic(AssetPaths.bg1point2__png);
+		bg1.scrollFactor.set(0.45, 0.45);
+		add(bg1);
+		
+		var clouds2:FlxSprite = new FlxSprite(0, WORLDSIZE.height * 0.35).loadGraphic(AssetPaths.cloudsFew__png);
+		clouds2.flipX = true;
+		clouds2.scrollFactor.set(0.52, 0.52);
+		clouds2.alpha = 0.7;
+		add(clouds2);
+		FlxTween.tween(clouds2, {x: FlxG.width * 0.6}, 40, {type:FlxTweenType.PINGPONG});
+		
+		var bg2:FlxSprite = new FlxSprite(0, WORLDSIZE.height * 0.45).loadGraphic(AssetPaths.bg2__png);
+		bg2.scrollFactor.set(0.60, 0.60);
+		add(bg2);
+		
 		
 		_player = new Player(WORLDSIZE.width / 2, WORLDSIZE.height / 2);
 		add(_player);
@@ -70,10 +101,19 @@ class PlayState extends FlxState
 		
 		FlxG.camera.follow(_camTrack, FlxCameraFollowStyle.LOCKON, 0.1);
 		FlxG.camera.followLead.set(10, 5);
-		FlxG.camera.setScrollBounds(0, WORLDSIZE.width, 0, WORLDSIZE.height);
+		FlxG.camera.setScrollBounds(0, WORLDSIZE.width, 500, WORLDSIZE.height);
 		FlxG.worldBounds.set(0, 0, WORLDSIZE.width, WORLDSIZE.height);
 		
+		walls = new FlxGroup();
+		add(walls);
 		
+		var floor:FlxObject = new FlxObject(0, WORLDSIZE.height - 2, WORLDSIZE.width, 2);
+		floor.immovable = true;
+		walls.add(floor);
+		
+		var ceil:FlxObject = new FlxObject(0, 500, WORLDSIZE.width, 2);
+		ceil.immovable = true;
+		walls.add(ceil);
 		
 		super.create();
 	}
@@ -127,14 +167,14 @@ class PlayState extends FlxState
 				
 				while (enemiesLeft < Std.int(FlxG.random.float(8 * curWave * 0.7, 12 * (curWave * 0.7))))
 				{
-					if (FlxG.random.bool(10))
+					if (FlxG.random.bool(20))
 					{
-						var enemy:Enemy = new Bat(WORLDSIZE.width + FlxG.random.float(0, 60), FlxG.random.float(0, WORLDSIZE.height - 30));
+						var enemy:Bat = new Bat(WORLDSIZE.width + FlxG.random.float(0, 60), FlxG.random.float(150, WORLDSIZE.height - 180));
 						grpEnemies.add(enemy);
 					}
 					else
 					{
-						var enemy:Enemy = new Eyeball(WORLDSIZE.width + FlxG.random.float(0, 60), FlxG.random.float(0, WORLDSIZE.height - 30));
+						var enemy:Eyeball = new Eyeball(WORLDSIZE.width + FlxG.random.float(0, 60), FlxG.random.float(0, WORLDSIZE.height - 30));
 						grpEnemies.add(enemy);
 					}
 					
@@ -150,29 +190,35 @@ class PlayState extends FlxState
 			txtWaveTime.visible = false;
 	}
 
-	private function shootBullet():Void
+	private function shootBullet(isMultiple:Bool = false):Void
 	{
-		var dir:Int = 1;
-		if (_player.facing == FlxObject.LEFT && _book.spells.get("goLeft")[2])
-			dir = -1;
-		
-		var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180));
-		grpBullets.add(bullet);
-		
-		if (_book.spells.get("triple2")[2])
+		if (_player.shootingCoolDown <= 0 || isMultiple)
 		{
-			var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 - 30));
+			var dir:Int = 1;
+			if (_player.facing == FlxObject.LEFT && _book.spells.get("goLeft")[2])
+				dir = -1;
+			
+			var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180));
 			grpBullets.add(bullet);
 			
-			var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 + 30));
-			grpBullets.add(bullet);
+			if (_book.spells.get("triple2")[2])
+			{
+				var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 - 30));
+				grpBullets.add(bullet);
+				
+				var bullet:Bullet = new Bullet(_player.getMidpoint().x, _player.getMidpoint().y - 50, 700 * dir, FlxAngle.asRadians(180 + 30));
+				grpBullets.add(bullet);
+			}
+			_player.shootingCoolDown = 0.3;
 		}
-		
 	}
 	
 	override public function update(elapsed:Float):Void
 	{
 		cameraHandle();
+		
+		FlxG.collide(walls, _player);
+		FlxG.collide(walls, grpEnemies);
 		
 		if (_player.life <= 0)
 			FlxG.resetState();
@@ -185,7 +231,7 @@ class PlayState extends FlxState
 			{
 				new FlxTimer().start(0.1, function(tmr:FlxTimer)
 				{
-					shootBullet();
+					shootBullet(true);
 				}, 2);
 			}
 		}
@@ -225,7 +271,7 @@ class PlayState extends FlxState
 			switch(e.ETYPE)
 			{
 				case Enemy.BAT:
-					FlxVelocity.moveTowardsObject(e, _player, e.speed);
+					FlxVelocity.moveTowardsPoint(e, _player.getMidpoint(), e.speed);
 			}
 		});
 		
