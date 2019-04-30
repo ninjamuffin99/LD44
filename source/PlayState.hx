@@ -53,6 +53,8 @@ class PlayState extends FlxState
 	
 	override public function create():Void
 	{
+		FlxG.camera.fade(FlxColor.BLACK, 2, true);
+		
 		WORLDSIZE = new FlxRect(0, 0, FlxG.width * 4, FlxG.height * 4);
 		
 		initEnvironment();
@@ -171,7 +173,13 @@ class PlayState extends FlxState
 		_book.scrollFactor.set();
 		add(_book);
 		
-		btnBook.onUp.callback = function(){openBook(); };
+		btnBook.onUp.callback = function()
+		{
+			if (!_book.on)
+			{
+				openBook(); 
+			}
+		};
 		
 		//THE ACTUAL HUD
 		grpHUD = new FlxSpriteGroup();
@@ -328,6 +336,8 @@ class PlayState extends FlxState
 		}
 		
 		_player.canBoost = _book.spells.get("boost")[2];
+		if (_book.spells.get("altcol")[2])
+			_player.animation.play("alt");
 		
 		FlxG.collide(walls, _player);
 		FlxG.collide(sideWallsLol, _player);

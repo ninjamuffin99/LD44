@@ -27,6 +27,7 @@ class Spellbook extends FlxSpriteGroup
 	private var grpBtns:FlxTypedSpriteGroup<FlxSpriteButton>;
 	private var grpTxts:FlxTypedSpriteGroup<FlxText>;
 	
+	private var grp1stPage:FlxTypedSpriteGroup<FlxText>;
 	private var title:FlxText;
 	private var p:Player;
 
@@ -102,20 +103,42 @@ class Spellbook extends FlxSpriteGroup
 			grpTxts.add(txt);
 		}
 		
-		title = new FlxText(FlxG.width * 0.12, 100, FlxG.width * 0.3, "Instert title here", 50);
+		grp1stPage = new FlxTypedSpriteGroup<FlxText>();
+		add(grp1stPage);
+		
+		title = new FlxText(FlxG.width * 0.02, 70, FlxG.width * 0.5, "Paristroyer", 90);
 		title.font = "assets/data/DK Lemon Yellow Sun.otf";
 		title.color = FlxColor.BLACK;
 		title.alignment = CENTER;
-		add(title);
+		grp1stPage.add(title);
+		
+		var createdBy:FlxText = new FlxText(FlxG.width * 0.1, 160, FlxG.width * 0.3, "Designed by Arzonaut and ninja_muffin99\nMade in 72 hours for Ludum Dare 44\n'Your life is currency'", 32);
+		createdBy.font = AssetPaths.LionCub_Regular_2__ttf;
+		createdBy.color = FlxColor.BLACK;
+		createdBy.alpha = 0.7;
+		createdBy.alignment = CENTER;
+		grp1stPage.add(createdBy);
+		
+		var creds:FlxText = new FlxText(FlxG.width * 0.28, 100, FlxG.width * 0.9, "Programming - ninja_muffin99\nArt - Arzonaut\nAdditional Art - FuShark and Digimin\nMusic - nerostratos\nAdditional Music - Yahtzei\nSound Help - PhantomArcade\n\nMade with HaxeFlixel\nSpecial thanks to Newgrounds", 24);
+		creds.text += "\nSource code - Githib.com/ninjamuffin99/ld44";
+		creds.font = AssetPaths.LionCub_Regular_2__ttf;
+		creds.color = FlxColor.BLACK;
+		creds.alpha = 0.7;
+		creds.alignment = CENTER;
+		grp1stPage.add(creds);
+		
 	}
 	
 	override public function update(elapsed:Float):Void 
 	{
+		if (curPage > 2)
+			curPage = 2;
+		
 		if (curPage >= 0)
 		{
 			grpTxts.visible = true;
 			grpBtns.visible = true;
-			title.visible = false;
+			grp1stPage.visible = false;
 			
 			for (i in 0...3)
 			{
@@ -141,7 +164,7 @@ class Spellbook extends FlxSpriteGroup
 		}
 		else if (curPage >= -1)
 		{
-			title.visible = true;
+			grp1stPage.visible = true;
 			grpBtns.visible = false;
 			grpTxts.visible = false;
 		}
@@ -153,23 +176,23 @@ class Spellbook extends FlxSpriteGroup
 	
 	private function generateSpells():Void
 	{
-		spells.set("triple", ["Shoots 3 bullets in a burst!", 			0.05, false, "Trio Spellshit"]);
-		spells.set("triple2", ["Shoots bullets in multi directions!", 	0.05, false, "Triplosus"]);
-		spells.set("boost", ["Double tap a direction to do a dash!", 	0.05, false, "Coolboost"]);
-		spells.set("pixie", ["A pixie helps you defeat enemies!", 		0.1, false, "Smol help"]);
-		spells.set("ass", 	["Dashing downwards deals damage!", 		0.1, false, "Booty bounce"]);
-		spells.set("pixie3", ["", 		0.05, false, ""]);
+		spells.set("triple", ["Shoots 3 bullets in a burst!", 			0.4, false, "Triplosus"]);
+		spells.set("triple2", ["Shoots bullets in multi directions!", 	0.2, false, "Triplosus"]);
+		spells.set("boost", ["Double tap a direction to do a dash!", 	0.1, false, "Broom Boost"]);
+		spells.set("pixie", ["A pixie helps you defeat enemies!", 		0.2, false, "Smol Shield"]);
+		spells.set("ass", 	["Dashing downwards deals damage! (Needs Broom Boost)", 		0.3, false, "Booty Bounce"]);
+		spells.set("altcol", ["An alternate color pallete!", 			0.5, false, "Fashion Police"]);
 		spells.set("pixie4", ["", 		0.05, false, ""]);
 	}
 	
 	private var spellArray:Array<String> = 
 	[
-		"triple",
-		"triple2",
 		"boost",
 		"pixie",
 		"ass",
-		"pixie3",
-		"pixie4"
+		"triple",
+		"altcol",
+		"pixie4",
+		
 	];
 }
