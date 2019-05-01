@@ -23,6 +23,7 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import io.newgrounds.NG;
 
 class PlayState extends FlxState
 {
@@ -295,30 +296,42 @@ class PlayState extends FlxState
 		}
 	}
 	
+	private function unlockMed(id:Int)
+	{
+		if (NGio.isLoggedIn)
+		{
+			var medal = NG.core.medals.get(id);
+			if (!medal.unlocked)
+				medal.sendUnlock();
+		}
+	}
+	
 	private function openBook():Void
 	{
+		unlockMed(56986);
+		
 		var goalY:Float = 0;
-			var curEase;
+		var curEase;
+		
+		if (!_book.on && waveTimer > 0)
+		{
+			//FlxG.sound.play(AssetPaths.phoneOff__mp3, 0.7);
+			goalY = 20;
+			curEase = FlxEase.backOut;
+			FlxG.sound.play(AssetPaths.bookOpen__mp3, 0.7);
+		}
+		else
+		{
+			goalY = FlxG.height + 160;
+			curEase = FlxEase.backIn;
+			FlxG.sound.play(AssetPaths.bookClose__mp3, 0.7);
+			//FlxG.sound.play(AssetPaths.phoneOn__wav, 0.7);
 			
-			if (!_book.on && waveTimer > 0)
-			{
-				//FlxG.sound.play(AssetPaths.phoneOff__mp3, 0.7);
-				goalY = 20;
-				curEase = FlxEase.backOut;
-				FlxG.sound.play(AssetPaths.bookOpen__mp3, 0.7);
-			}
-			else
-			{
-				goalY = FlxG.height + 160;
-				curEase = FlxEase.backIn;
-				FlxG.sound.play(AssetPaths.bookClose__mp3, 0.7);
-				//FlxG.sound.play(AssetPaths.phoneOn__wav, 0.7);
-				
-				//API.unlockMedal("MILLENIALS");
-			}
-			FlxTween.tween(_book, {y: goalY}, 0.5, {ease:curEase});
-			
-			_book.on = !_book.on;
+			//API.unlockMedal("MILLENIALS");
+		}
+		FlxTween.tween(_book, {y: goalY}, 0.5, {ease:curEase});
+		
+		_book.on = !_book.on;
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -344,7 +357,15 @@ class PlayState extends FlxState
 		FlxG.collide(walls, grpEnemies);
 		
 		if (_player.life <= 0)
+		{
+			if (NGio.isLoggedIn)
+			{
+				var board = NG.core.scoreBoards.get(8530);
+				board.postScore(curWave);
+			}
+			
 			FlxG.resetState();
+		}
 		
 		if (FlxG.mouse.justPressed || FlxG.keys.justPressed.SPACE)
 		{
