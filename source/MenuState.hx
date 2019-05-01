@@ -4,7 +4,9 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.math.FlxMath;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.FlxTweenType;
 import flixel.util.FlxColor;
@@ -16,6 +18,9 @@ import flixel.util.FlxColor;
 class MenuState extends FlxState 
 {
 	private var camFollow:FlxObject;
+	
+	private var logo:FlxSprite;
+	private var logo2:FlxSprite;
 
 	override public function create():Void 
 	{
@@ -73,7 +78,7 @@ class MenuState extends FlxState
 		txt.scrollFactor.set();
 		//add(txt);
 		
-		var logo2:FlxSprite = new FlxSprite(90, 185).loadGraphic(AssetPaths.titlelogo__png);
+		logo2 = new FlxSprite(90, 185).loadGraphic(AssetPaths.titlelogo__png);
 		logo2.setGraphicSize(Std.int(logo2.width * 0.355));
 		logo2.updateHitbox();
 		logo2.antialiasing = true;
@@ -81,11 +86,13 @@ class MenuState extends FlxState
 		logo2.color = FlxColor.BLACK;
 		add(logo2);
 		
-		var logo:FlxSprite = new FlxSprite(90, 185).loadGraphic(AssetPaths.titlelogo__png);
+		logo = new FlxSprite(90, 185).loadGraphic(AssetPaths.titlelogo__png);
 		logo.setGraphicSize(Std.int(logo.width * 0.35));
 		logo.updateHitbox();
 		logo.antialiasing = true;
 		logo.scrollFactor.set(0.02, 0.02);
+		FlxTween.tween(logo.offset, {y: logo.offset.y + 20}, 0.8, {ease:FlxEase.quadInOut, type:FlxTween.PINGPONG});
+		FlxTween.tween(logo2.offset, {y: logo2.offset.y + 26}, 0.81, {ease:FlxEase.quadInOut, type:FlxTween.PINGPONG});
 		add(logo);
 		
 		
@@ -95,6 +102,9 @@ class MenuState extends FlxState
 	override public function update(elapsed:Float):Void 
 	{
 		cameraHandle();
+		
+		logo.angle = FlxMath.remapToRange(FlxG.mouse.x - FlxG.width / 2, 0, FlxG.width / 2, 0, 2);
+		logo2.angle = FlxMath.remapToRange(FlxG.mouse.x - FlxG.width / 2, 0, FlxG.width / 2, 0, 4);
 		
 		if (FlxG.mouse.justPressed)
 		{
@@ -113,7 +123,7 @@ class MenuState extends FlxState
 		//SHOUTOUT TO MIKE, AND ALSO BOMTOONS
 		var dx = (FlxG.width / 2) - FlxG.mouse.x;
 		var dy = (FlxG.height / 2) - FlxG.mouse.y;
-		//var length = Math.sqrt(dx * dx + dy * dy);
+		//length = Math.sqrt(dx * dx + dy * dy);
 		var camOffset = 0.4;
 		dx *= camOffset;
 		dy *= camOffset;
