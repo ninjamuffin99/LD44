@@ -91,10 +91,14 @@ class MenuState extends FlxState
 		logo.updateHitbox();
 		logo.antialiasing = true;
 		logo.scrollFactor.set(0.02, 0.02);
-		FlxTween.tween(logo.offset, {y: logo.offset.y + 20}, 0.8, {ease:FlxEase.quadInOut, type:FlxTween.PINGPONG});
-		FlxTween.tween(logo2.offset, {y: logo2.offset.y + 26}, 0.81, {ease:FlxEase.quadInOut, type:FlxTween.PINGPONG});
+		FlxTween.tween(logo.offset, {y: logo.offset.y + 20}, 0.8, {ease:FlxEase.quadInOut, type:	FlxTweenType.PINGPONG});
+		FlxTween.tween(logo2.offset, {y: logo2.offset.y + 26}, 0.81, {ease:FlxEase.quadInOut, type:	FlxTweenType.PINGPONG});
 		add(logo);
 		
+		
+		FlxG.camera.fade(FlxColor.BLACK, 1, true);
+		FlxG.sound.playMusic(AssetPaths.ambience__mp3, 0);
+		FlxG.sound.music.fadeIn(3, 0, 0.65);
 		
 		super.create();
 	}
@@ -108,13 +112,12 @@ class MenuState extends FlxState
 		
 		if (FlxG.mouse.justPressed)
 		{
+			FlxG.sound.music.fadeOut(2);
 			FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 			{
 				FlxG.switchState(new PlayState());
 			});
-			
 		}
-		
 		super.update(elapsed);
 	}
 	

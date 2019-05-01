@@ -142,6 +142,7 @@ class Player extends FlxSprite
 	
 	public function invincibleStart(time:Float = 1):Void
 	{
+		FlxG.sound.play(AssetPaths.girlHit__mp3, 0.6);
 		invincible = true;
 		
 		new FlxTimer().start(time, function(tmr:FlxTimer)

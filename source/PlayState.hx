@@ -296,7 +296,7 @@ class PlayState extends FlxState
 		}
 	}
 	
-	private function unlockMed(id:Int)
+	public static  function unlockMed(id:Int)
 	{
 		if (NGio.isLoggedIn)
 		{
@@ -392,15 +392,15 @@ class PlayState extends FlxState
 		
 		grpEnemies.forEachAlive(function(e:Enemy)
 		{
-			if (e.x <= -50)
+			if (e.x <= -50 || e.y < 0 || e.y > WORLDSIZE.height - 2)
 			{
-				e.y = _player.y + FlxG.random.float( -300, 300);
+				e.y = _player.y + FlxG.random.float( -250, 250);
 				e.x = WORLDSIZE.width;
 			}
 			if (e.x >= WORLDSIZE.width + 60)
-			{
-				e.x = -20;
-				e.y = _player.y + FlxG.random.float( -300, 300);
+			{                                         
+				e.x = -20;                            
+				e.y = _player.y + FlxG.random.float( -250, 250);
 			}
 			
 			switch(e.ETYPE)

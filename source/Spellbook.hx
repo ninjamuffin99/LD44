@@ -2,12 +2,14 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 /**
  * ...
@@ -94,7 +96,8 @@ class Spellbook extends FlxSpriteGroup
 			txt.alpha = 0.7;
 			
 			var bgBtn:FlxSpriteButton = new FlxSpriteButton(50, 80 + (110 * i), null);
-			bgBtn.makeGraphic(400, 95, FlxColor.BLACK);
+			bgBtn.makeGraphic(400, 95, FlxColor.WHITE);
+			bgBtn.color = FlxColor.BLACK;
 			bgBtn.alpha = 0.1;
 			bgBtn.onOver.callback = function(){bgBtn.alpha = 0.2; };
 			bgBtn.onOut.callback = function(){bgBtn.alpha = 0.1; };
@@ -150,9 +153,19 @@ class Spellbook extends FlxSpriteGroup
 					
 					grpBtns.members[i].onUp.callback = function()
 					{
-						p.life -= curSpell[1];
-						spells.get(spellArray[i + (3 * curPage)])[2] = true;
-						FlxG.sound.play(AssetPaths.aquireSkill__mp3, 0.7);
+						if (p.life > curSpell[1])
+						{
+							p.life -= curSpell[1];
+							spells.get(spellArray[i + (3 * curPage)])[2] = true;
+							if (spellArray[i + (3 * curPage)] == "altcol")
+							FlxG.sound.play(AssetPaths.aquireSkill__mp3, 0.7);
+						}
+						else
+						{
+							FlxG.sound.play(AssetPaths.cantBuy__mp3);
+							grpBtns.members[i].color = FlxColor.RED;
+							FlxFlicker.flicker(grpBtns.members[i], 0.5, 0.1, true, false, function(flk:FlxFlicker){grpBtns.members[i].color = FlxColor.BLACK; });
+						}
 					};
 				}
 				else
@@ -182,7 +195,7 @@ class Spellbook extends FlxSpriteGroup
 		spells.set("pixie", ["A pixie helps you defeat enemies!", 		0.2, false, "Smol Shield"]);
 		spells.set("ass", 	["Dashing downwards deals damage! (Needs Broom Boost)", 		0.3, false, "Booty Bounce"]);
 		spells.set("altcol", ["An alternate color pallete!", 			0.5, false, "Fashion Police"]);
-		spells.set("pixie4", ["", 		0.05, false, ""]);
+		spells.set("pixie4", ["Literally just spending life for no reason lmao", 		0.99, false, "Go commit die"]);
 	}
 	
 	private var spellArray:Array<String> = 
