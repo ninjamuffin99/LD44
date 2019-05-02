@@ -32,6 +32,11 @@ class Spellbook extends FlxSpriteGroup
 	private var grp1stPage:FlxTypedSpriteGroup<FlxText>;
 	private var title:FlxText;
 	private var p:Player;
+	
+	private var nextBtn:FlxSpriteButton;
+	private var prevBtn:FlxSpriteButton;
+	private var nextTxt:FlxText;
+	private var prevTxt:FlxText;
 
 	public function new(X:Float=0, Y:Float=0, p:Player) 
 	{
@@ -47,7 +52,7 @@ class Spellbook extends FlxSpriteGroup
 		bg.updateHitbox();
 		add(bg);
 		
-		var prevBtn:FlxSpriteButton = new FlxSpriteButton(70, FlxG.height - 100, null, function()
+		prevBtn = new FlxSpriteButton(70, FlxG.height - 100, null, function()
 		{
 			curPage -= 1; 
 			FlxG.sound.play(AssetPaths.bookClose__mp3, 0.5);
@@ -58,7 +63,7 @@ class Spellbook extends FlxSpriteGroup
 		prevBtn.onOut.callback = function(){prevBtn.alpha = 0.1; };
 		add(prevBtn);
 		
-		var nextBtn:FlxSpriteButton = new FlxSpriteButton(FlxG.width - 95, FlxG.height - 100, null, function()
+		nextBtn = new FlxSpriteButton(FlxG.width - 95, FlxG.height - 100, null, function()
 		{
 			curPage += 1;
 			FlxG.sound.play(AssetPaths.bookOpen__mp3, 0.5);
@@ -67,14 +72,15 @@ class Spellbook extends FlxSpriteGroup
 		nextBtn.alpha = 0.1;
 		nextBtn.onOver.callback = function(){nextBtn.alpha = 0.2; };
 		nextBtn.onOut.callback = function(){nextBtn.alpha = 0.1; };
+		nextBtn.visible = false;
 		add(nextBtn);
 		
-		var prevTxt:FlxText = new FlxText(70 + 4, FlxG.height - 100 + 4, 0, "prev", 22);
+		prevTxt = new FlxText(70 + 4, FlxG.height - 100 + 4, 0, "prev", 22);
 		prevTxt.font = AssetPaths.LionCub_Regular_2__ttf;
 		prevTxt.color = FlxColor.BLACK;
 		add(prevTxt);
 		
-		var nextTxt:FlxText = new FlxText(FlxG.width - 90, FlxG.height - 100 + 4, 0, "next", 22);
+		nextTxt = new FlxText(FlxG.width - 90, FlxG.height - 100 + 4, 0, "next", 22);
 		nextTxt.font = AssetPaths.LionCub_Regular_2__ttf;
 		nextTxt.color = FlxColor.BLACK;
 		add(nextTxt);
@@ -85,17 +91,21 @@ class Spellbook extends FlxSpriteGroup
 		grpTxts = new FlxTypedSpriteGroup<FlxText>();
 		add(grpTxts);
 		
-		for (i in 0...3)
+		for (i in 0...6)
 		{
 			var curSpell:Array<Dynamic> = spells.get(spellArray[i]);
 			
-			var txt:FlxText = new FlxText(70, 80 + (110 * i), FlxG.width * 0.4, "BLAH BLAH BLACH\n\nSPELLS AND SHIT\nLMAO", 24);
+			var xOff:Float = 50;
+			if (i >= 3)
+				xOff += FlxG.width * 0.47;
+			
+			var txt:FlxText = new FlxText(xOff + 20, 80 + (110 * (i % 3)), FlxG.width * 0.4, "BLAH BLAH BLACH\n\nSPELLS AND SHIT\nLMAO", 24);
 			txt.font = AssetPaths.LionCub_Regular_2__ttf;
 			txt.color = FlxColor.BLACK;
 			txt.text = curSpell[3] + ": " + curSpell[0] + "\nCosts: " + Std.string(curSpell[1] * 100) + "% of total life";
 			txt.alpha = 0.7;
 			
-			var bgBtn:FlxSpriteButton = new FlxSpriteButton(50, 80 + (110 * i), null);
+			var bgBtn:FlxSpriteButton = new FlxSpriteButton(xOff, 80 + (110 * (i % 3)), null);
 			bgBtn.makeGraphic(400, 95, FlxColor.WHITE);
 			bgBtn.color = FlxColor.BLACK;
 			bgBtn.alpha = 0.1;
@@ -134,8 +144,20 @@ class Spellbook extends FlxSpriteGroup
 	
 	override public function update(elapsed:Float):Void 
 	{
-		if (curPage > 2)
-			curPage = 2;
+		if (curPage == 0)
+		{
+			prevTxt.visible = true;
+			prevBtn.visible = true;
+			nextTxt.visible = false;
+			nextBtn.visible = false;
+		}
+		else
+		{
+			prevTxt.visible = false;
+			prevBtn.visible = false;
+			nextBtn.visible = true;
+			nextTxt.visible = true;
+		}
 		
 		if (curPage >= 0)
 		{
@@ -143,7 +165,7 @@ class Spellbook extends FlxSpriteGroup
 			grpBtns.visible = true;
 			grp1stPage.visible = false;
 			
-			for (i in 0...3)
+			for (i in 0...6)
 			{
 				var curSpell:Array<Dynamic> = spells.get(spellArray[i + (3 * curPage)]);
 				
