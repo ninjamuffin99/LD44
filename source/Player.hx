@@ -21,7 +21,7 @@ class Player extends FlxSprite
 	private var speed:Float = 1750;
 	private var thaDrag:Float = 500;
 	private var maxVel:Float = 330;
-	public var life:Float = 0.2;
+	public var life:Float = 0.25;
 	
 	public var invincible:Bool = false;
 	

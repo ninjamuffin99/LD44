@@ -34,7 +34,7 @@ class Preloader extends FlxBasePreloader
 	{	
 		// this code only runs when its on the web
 		#if (flash || html5)
-			var newgrounds:NGio = new NGio(APIShh.API, APIShh.ENC);
+			//var newgrounds:NGio = new NGio(APIShh.API, APIShh.ENC);
 		#end
 		
 		this._width = Lib.current.stage.stageWidth;
