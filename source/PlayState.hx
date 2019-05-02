@@ -55,6 +55,7 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		FlxG.camera.fade(FlxColor.BLACK, 2, true);
+		//FlxG.camera.zoom = 0.85;
 		
 		WORLDSIZE = new FlxRect(0, 0, FlxG.width * 4, FlxG.height * 4);
 		
@@ -170,7 +171,7 @@ class PlayState extends FlxState
 		add(btnBook);
 		
 		//THE BOOK SHIT
-		_book = new Spellbook(0, FlxG.height, _player);
+		_book = new Spellbook(0, FlxG.height + 160, _player);
 		_book.scrollFactor.set();
 		add(_book);
 		
@@ -363,8 +364,11 @@ class PlayState extends FlxState
 				var board = NG.core.scoreBoards.get(8530);
 				board.postScore(curWave);
 			}
+			_player.velocity.y -= 200;
+			_player.angularVelocity = 7;
 			
-			FlxG.resetState();
+			_player.isDead = true;
+			FlxG.camera.fade(FlxColor.BLACK, 1.6, false, function(){FlxG.switchState(new GameOver()); });
 		}
 		
 		if (FlxG.mouse.justPressed || FlxG.keys.justPressed.SPACE)
@@ -394,7 +398,11 @@ class PlayState extends FlxState
 		{
 			if (e.x <= -50 || e.y < 0 || e.y > WORLDSIZE.height - 2)
 			{
-				e.y = _player.y + FlxG.random.float( -250, 250);
+				while (e.y < 540 || e.y > WORLDSIZE.height)
+				{
+					e.y = _player.y + FlxG.random.float( -250, 250);
+				}
+				
 				e.x = WORLDSIZE.width;
 			}
 			if (e.x >= WORLDSIZE.width + 60)

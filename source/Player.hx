@@ -35,6 +35,7 @@ class Player extends FlxSprite
 
 	private var angleOffset:Float = 0.1;
 	public var canBoost:Bool = false;
+	public var isDead:Bool = false;
 	private var flySound:FlxSound;
 	
 	public function new(?X:Float=0, ?Y:Float=0, ?SimpleGraphic:FlxGraphicAsset) 
@@ -80,8 +81,6 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
-		angle = FlxMath.remapToRange(velocity.x, 0, maxVel, 0, 15);
-		angle += angleOffset;
 		
 		
 		
@@ -123,8 +122,10 @@ class Player extends FlxSprite
 				//offset.x = 200;
 		}
 		
-		if (!on)
+		if (!on && !isDead)
 			controls();
+		else if (isDead)
+			acceleration.y = -1900;
 		
 		if (invincible)
 		{
@@ -153,6 +154,10 @@ class Player extends FlxSprite
 	
 	private function controls():Void
 	{
+		angle = FlxMath.remapToRange(velocity.x, 0, maxVel, 0, 15);
+		angle += angleOffset;
+		
+		
 		var up:Bool = FlxG.keys.anyPressed(["UP", "W"]);
 		var down:Bool = FlxG.keys.anyPressed(["DOWN", "S"]);
 		var left:Bool = FlxG.keys.anyPressed(["LEFT", "A"]);
