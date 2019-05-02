@@ -12,4 +12,4 @@ Version 1.0.1 - May 2nd 2019 - Lil Fixins
 #----------------------------#
 Version 1.0.0 - April 30th 2019 - RELEASE
 #----------------------------#
-	The game released onto Newgrounds
+- The game released onto Newgrounds
